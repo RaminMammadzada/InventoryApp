@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">InventoryApp</string>
+
+    <!-- Label for editor menu option to save pet and leave editor [CHAR LIMIT=20] -->
+    <string name="action_save">Save</string>
+
+    <!-- Label for editor overflow menu option that deletes the current pet [CHAR LIMIT=20] -->
+    <string name="action_delete">Delete</string>
+    <string name="go_to_store">Store</string>
+    <string name="go_to_sales">Sales</string>
+</resources>
