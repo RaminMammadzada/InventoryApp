@@ -8,4 +8,36 @@
     <string name="action_delete">Delete</string>
     <string name="go_to_store">Store</string>
     <string name="go_to_sales">Sales</string>
+
+    <!-- Label for dropdown menu option if the supplier's name is KAMUEL [CHAR LIMIT=20] -->
+    <string name="supplier_KAMUEL">KAMUEL</string>
+
+    <!-- Label for dropdown menu option if the supplier's name is WALKAIR [CHAR LIMIT=20] -->
+    <string name="supplier_WALKAIR">WALKAIR</string>
+
+    <!-- Label for dropdown menu option if the supplier's name is DEPEDRO [CHAR LIMIT=20] -->
+    <string name="supplier_DEPEDRO">DEPEDRO</string>
+
+    <!-- Label for dropdown menu option if the supplier's name is NIKE [CHAR LIMIT=20] -->
+    <string name="supplier_NIKE">NIKE</string>
+
+    <!-- Label for dropdown menu option if the supplier's name is FOREX [CHAR LIMIT=20] -->
+    <string name="supplier_FOREX">FOREX</string>
+
+    <!-- Label for dropdown menu option if the supplier's name is FORSCLASS [CHAR LIMIT=20] -->
+    <string name="supplier_FORSCLASS">FORSCLASS</string>
+
+    <!-- Label for dropdown menu option if the supplier's name is UNKNOWN [CHAR LIMIT=20] -->
+    <string name="supplier_UNKNOWN">UNKNOWN</string>
+    <string name="label_store">Store</string>
+    <string name="label_new_product">New Product</string>
+    <string name="label_sales">Sales</string>
+    <string name="label_new_sale">New Sale</string>
+    <string name="title_product">Product</string>
+    <string name="product_name_hint">name</string>
+    <string name="product_price_hint">price</string>
+    <string name="product_quantity_hint">quantity</string>
+    <string name="product_size_hint">size</string>
+    <string name="title_supplier">Supplier</string>
+    <string name="supplier_phone_hint">phone number</string>
 </resources>

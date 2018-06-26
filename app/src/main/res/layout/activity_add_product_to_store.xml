@@ -17,7 +17,7 @@
 
         <!-- Label -->
         <TextView
-            android:text="Overview"
+            android:text="@string/title_product"
             style="@style/AddItemStyle" />
 
         <!-- Input fields -->
@@ -31,23 +31,31 @@
             <!-- Name field -->
             <EditText
                 android:id="@+id/add_name"
-                android:hint="name"
+                android:hint="@string/product_name_hint"
                 android:inputType="textCapWords"
                 style="@style/EditorFieldStyle" />
 
             <!-- Price field -->
             <EditText
                 android:id="@+id/add_price"
-                android:hint="price"
-                android:inputType="textCapWords"
+                android:hint="@string/product_price_hint"
+                android:inputType="number"
                 style="@style/EditorFieldStyle" />
 
             <!-- Quantity field -->
             <EditText
                 android:id="@+id/add_quantity"
-                android:hint="price"
-                android:inputType="textCapWords"
+                android:hint="@string/product_quantity_hint"
+                android:inputType="number"
                 style="@style/EditorFieldStyle" />
+
+            <!-- Size field -->
+            <EditText
+                android:id="@+id/add_size"
+                android:hint="@string/product_size_hint"
+                android:inputType="number"
+                style="@style/EditorFieldStyle" />
+
         </LinearLayout>
     </LinearLayout>
 
@@ -60,7 +68,7 @@
 
         <!-- Label -->
         <TextView
-            android:text="Supplier"
+            android:text="@string/title_supplier"
             style="@style/AddItemStyle" />
 
         <!-- Input field -->
@@ -81,39 +89,12 @@
             <!-- Supplier phone number -->
             <EditText
                 android:id="@+id/add_supplier_phone"
-                android:hint="phone number"
-                android:inputType="textCapWords"
+                android:hint="@string/supplier_phone_hint"
+                android:inputType="phone"
                 style="@style/EditorFieldStyle" />
 
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Measurement category -->
-    <LinearLayout
-        android:id="@+id/container_measurement"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
 
-        <!-- Label -->
-        <TextView
-            android:text="Measurement"
-            style="@style/AddItemStyle" />
-
-        <!-- Input fields -->
-        <RelativeLayout
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:paddingLeft="4dp">
-
-            <!-- Size field -->
-            <EditText
-                android:id="@+id/add_size"
-                android:hint="size of the shoes"
-                android:inputType="number"
-                style="@style/EditorFieldStyle" />
-
-        </RelativeLayout>
-    </LinearLayout>
 </LinearLayout>

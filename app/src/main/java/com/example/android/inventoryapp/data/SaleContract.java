@@ -59,7 +59,7 @@ public final class SaleContract {
 
 
         /**
-         * Possible values for the gender of the pet.
+         * Possible values for the supplier.
          */
         public static final int KAMUEL = 0;
         public static final int WALKAIR = 1;
@@ -67,6 +67,7 @@ public final class SaleContract {
         public static final int NIKE = 3;
         public static final int FOREX = 4;
         public static final int FORSCLASS = 5;
+        public static final int UNKNOWN = 6;
 
     }
 

@@ -33,7 +33,7 @@ public final class StoreContract {
          *
          * Type: TEXT
          */
-        public final static String COLUMN_PRODUCT_NAME ="name";
+        public final static String COLUMN_PRODUCT_NAME = "name";
 
         /**
          * Price of the one product.
@@ -70,7 +70,7 @@ public final class StoreContract {
 
 
         /**
-         * Possible values for the gender of the pet.
+         * Possible value for the supplier.
          */
         public static final int KAMUEL = 0;
         public static final int WALKAIR = 1;
@@ -78,6 +78,7 @@ public final class StoreContract {
         public static final int NIKE = 3;
         public static final int FOREX = 4;
         public static final int FORSCLASS = 5;
+        public static final int UNKNOWN = 6;
 
     }
 }

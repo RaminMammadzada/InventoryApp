@@ -72,9 +72,9 @@ public class SalesActivity extends AppCompatActivity {
                 SaleEntry.COLUMN_SALE_QUANTITY,
                 SaleEntry.COLUMN_SALE_SUPPLIER_NAME};
 
-        // Perform a query on the pets table
+        // Perform a query on the sales table
         Cursor cursor = db.query(
-                ProductEntry.TABLE_NAME,   // The table to query
+                SaleEntry.TABLE_NAME,   // The table to query
                 projection,            // The columns to return
                 null,                  // The columns for the WHERE clause
                 null,                  // The values for the WHERE clause
@@ -98,7 +98,7 @@ public class SalesActivity extends AppCompatActivity {
                             SaleEntry.COLUMN_SALE_PRODUCT_NAME + " - " +
                             SaleEntry.COLUMN_SALE_PRICE + " - " +
                             SaleEntry.COLUMN_SALE_QUANTITY + " - " +
-                            SaleEntry.COLUMN_SALE_SUPPLIER_NAME + " - " + "\n" );
+                            SaleEntry.COLUMN_SALE_SUPPLIER_NAME +  "\n" );
 
             // Figure out the index of each column
             int idColumnIndex = cursor.getColumnIndex( SaleEntry.SALE_ID );
@@ -121,7 +121,7 @@ public class SalesActivity extends AppCompatActivity {
                         currentName + " - " +
                         currentPrice + " - " +
                         currentQuantity + " - " +
-                        currentSupplier + " - ") );
+                        currentSupplier ) );
             }
         } finally {
             // Always close the cursor when you're done reading from it. This releases all its
@@ -143,7 +143,8 @@ public class SalesActivity extends AppCompatActivity {
         // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
             case R.id.go_to_store:
-                displayDatabaseInfo();
+                Intent intent = new Intent( SalesActivity.this, StoreActivity.class );
+                startActivity( intent );
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.go_to_sales:

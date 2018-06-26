@@ -71,7 +71,7 @@ public class StoreActivity extends AppCompatActivity {
                 ProductEntry.COLUMN_SUPPLIER_NAME,
                 ProductEntry.COLUMN_SUPPLIER_PHONE };
 
-        // Perform a query on the pets table
+        // Perform a query on the store table
         Cursor cursor = db.query(
                 ProductEntry.TABLE_NAME,   // The table to query
                 projection,            // The columns to return
@@ -145,10 +145,11 @@ public class StoreActivity extends AppCompatActivity {
         // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
             case R.id.go_to_store:
-                displayDatabaseInfo();
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.go_to_sales:
+                Intent intent = new Intent( StoreActivity.this, SalesActivity.class );
+                startActivity( intent );
                 // Do nothing for now
                 return true;
         }
