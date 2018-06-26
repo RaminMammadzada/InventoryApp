@@ -3,6 +3,7 @@ package com.example.android.inventoryapp;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Trace;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -123,15 +124,29 @@ public class AddProductToStoreActivity extends AppCompatActivity {
     /**
      * Get user input from editor and save new product into database.
      */
-    private void insertProduct() {
+    private Boolean insertProduct() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String supplierPhoneString = mSupplierPhone.getText().toString().trim();
-        int quantity = Integer.parseInt( quantityString );
-        int price = Integer.parseInt( priceString );
+        int quantity = 0;
+        int price = 0;
+
+        Boolean isThereMissingField = false;
+
+        // checking if there any blank editText or not
+        if(TextUtils.isEmpty(mNameEditText.getText()) ){ mNameEditText.setError( "Name is required!" ); isThereMissingField = true;}
+        else if (TextUtils.isEmpty(mPriceEditText.getText())) { mPriceEditText.setError( "Price is required!" ); isThereMissingField = true;}
+        else if (TextUtils.isEmpty(mQuantityEditText.getText())) { mQuantityEditText.setError( "Quantity is required!" ); isThereMissingField = true;}
+        else if (TextUtils.isEmpty(mSupplierPhone.getText())) {mSupplierPhone.setError( "Phone is required" ); isThereMissingField = true;}
+
+        if(isThereMissingField) return false;
+
+        // To be sure that editText fields are filled
+        if(!TextUtils.isEmpty(mQuantityEditText.getText())) {quantity = Integer.parseInt( quantityString ); }
+        if(!TextUtils.isEmpty(mPriceEditText.getText())) {price = Integer.parseInt( priceString ); }
 
         // Create database helper
         SalesAndStoreDbHelper mDbHelper = new SalesAndStoreDbHelper( this );
@@ -159,6 +174,8 @@ public class AddProductToStoreActivity extends AppCompatActivity {
             // Otherwise, the insertion was successful and we can display a toast with the row ID.
             Toast.makeText( this, "Product saved with row id: " + newRowId, Toast.LENGTH_SHORT ).show();
         }
+
+        return true;
     }
 
     @Override
@@ -175,8 +192,11 @@ public class AddProductToStoreActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Save pet to database
-                insertProduct();
+                // Save product to database
+                if (!insertProduct()) {
+                    // saying to onOptionsItemSelected that user clicked button
+                    return true;
+                }
                 // Exit activity
                 finish();
                 return true;
