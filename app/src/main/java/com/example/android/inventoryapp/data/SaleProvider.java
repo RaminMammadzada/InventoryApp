@@ -61,9 +61,9 @@ public class SaleProvider extends ContentProvider {
         return true;
     }
 
-    @Nullable
+    
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query( Uri uri,  String[] projection,  String selection,  String[] selectionArgs,  String sortOrder) {
         // Get readable database
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
@@ -111,9 +111,9 @@ public class SaleProvider extends ContentProvider {
 
     }
 
-    @Nullable
+    
     @Override
-    public String getType(@NonNull Uri uri) {
+    public String getType( Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case SALES:
@@ -125,9 +125,9 @@ public class SaleProvider extends ContentProvider {
         }
     }
 
-    @Nullable
+    
     @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+    public Uri insert( Uri uri,  ContentValues contentValues) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case SALES:
@@ -188,7 +188,7 @@ public class SaleProvider extends ContentProvider {
 
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int delete( Uri uri,  String selection,  String[] selectionArgs) {
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
@@ -222,7 +222,7 @@ public class SaleProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int update( Uri uri,  ContentValues contentValues,  String selection,  String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case SALES:

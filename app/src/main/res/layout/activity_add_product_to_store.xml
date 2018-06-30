@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="@dimen/activity_margin"
-    tools:context=".AddProductActivity">
+    tools:context=".ui.AddEditProductActivity">
 
     <!-- Overview category -->
     <LinearLayout

@@ -7,16 +7,14 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.example.android.inventoryapp.data.StoreContract.ProductEntry;
+import com.example.android.inventoryapp.data.ProductContract.ProductEntry;
 
-public class StoreProvider extends ContentProvider {
-
+public class ProductProvider extends ContentProvider {
+    
     /** Tag for the log messages */
-    public static final String LOG_TAG = StoreProvider.class.getSimpleName();
+    public static final String LOG_TAG = ProductProvider.class.getSimpleName();
 
     /** URI matcher code for the content URI for the products table */
     private static final int PRODUCTS = 100;
@@ -40,7 +38,7 @@ public class StoreProvider extends ContentProvider {
         // The content URI of the form "content://com.example.android.pets/pets" will map to the
         // integer code {@link #PRODUCTS}. This URI is used to provide access to MULTIPLE rows
         // of the pets table.
-        sUriMatcher.addURI(StoreContract.CONTENT_AUTHORITY, StoreContract.PATH_PRODUCTS, PRODUCTS);
+        sUriMatcher.addURI( ProductContract.CONTENT_AUTHORITY, ProductContract.PATH_PRODUCTS, PRODUCTS);
 
         // The content URI of the form "content://com.example.android.pets/pets/#" will map to the
         // integer code {@link #PRODUCT_ID}. This URI is used to provide access to ONE single row
@@ -49,7 +47,7 @@ public class StoreProvider extends ContentProvider {
         // In this case, the "#" wildcard is used where "#" can be substituted for an integer.
         // For example, "content://com.example.android.pets/pets/3" matches, but
         // "content://com.example.android.pets/pets" (without a number at the end) doesn't match.
-        sUriMatcher.addURI(StoreContract.CONTENT_AUTHORITY, StoreContract.PATH_PRODUCTS + "/#", PRODUCT_ID);
+        sUriMatcher.addURI( ProductContract.CONTENT_AUTHORITY, ProductContract.PATH_PRODUCTS + "/#", PRODUCT_ID);
     }
 
     /** Database helper object */
@@ -61,9 +59,9 @@ public class StoreProvider extends ContentProvider {
         return true;
     }
 
-    @Nullable
+    
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query( Uri uri,  String[] projection,  String selection,  String[] selectionArgs,  String sortOrder) {
         // Get readable database
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
@@ -111,9 +109,9 @@ public class StoreProvider extends ContentProvider {
 
     }
 
-    @Nullable
+    
     @Override
-    public String getType(@NonNull Uri uri) {
+    public String getType( Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case PRODUCTS:
@@ -125,13 +123,13 @@ public class StoreProvider extends ContentProvider {
         }
     }
 
-    @Nullable
+    
     @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+    public Uri insert( Uri uri,  ContentValues contentValues) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case PRODUCTS:
-                return insertSale(uri, contentValues);
+                return insertProduct(uri, contentValues);
             default:
                 throw new IllegalArgumentException("Insertion is not supported for " + uri);
         }
@@ -141,7 +139,7 @@ public class StoreProvider extends ContentProvider {
      * Insert a sale into the database with the given content values. Return the new content URI
      * for that specific row in the database.
      */
-    private Uri insertSale(Uri uri, ContentValues values) {
+    private Uri insertProduct(Uri uri, ContentValues values) {
         // Check that the name is not null
         String name = values.getAsString(ProductEntry.COLUMN_PRODUCT_NAME);
         if (name == null) {
@@ -187,7 +185,7 @@ public class StoreProvider extends ContentProvider {
 
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int delete( Uri uri,  String selection,  String[] selectionArgs) {
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
@@ -221,18 +219,18 @@ public class StoreProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int update( Uri uri,  ContentValues contentValues,  String selection,  String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case PRODUCTS:
-                return updateSale(uri, contentValues, selection, selectionArgs);
+                return updateProduct(uri, contentValues, selection, selectionArgs);
             case PRODUCT_ID:
                 // For the SALE_ID code, extract out the ID from the URI,
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 selection = ProductEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
-                return updateSale(uri, contentValues, selection, selectionArgs);
+                return updateProduct(uri, contentValues, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
         }
@@ -243,7 +241,7 @@ public class StoreProvider extends ContentProvider {
      * specified in the selection and selection arguments (which could be 0 or 1 or more sales).
      * Return the number of rows that were successfully updated.
      */
-    private int updateSale(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    private int updateProduct(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         // If the {@link ProductEntry#COLUMN_PRODUCT_NAME} key is present,
         // check that the name value is not null.
         if (values.containsKey(ProductEntry.COLUMN_PRODUCT_NAME)) {
@@ -278,7 +276,7 @@ public class StoreProvider extends ContentProvider {
             // Check that the weight is greater than or equal to 0 kg
             Integer supplier = values.getAsInteger(ProductEntry.COLUMN_SUPPLIER_NAME);
             if (supplier != null || !ProductEntry.isValidSupplier(supplier)) {
-                throw new IllegalArgumentException("Sale requires valid supplier");
+                throw new IllegalArgumentException("Product requires valid supplier");
             }
         }
         // If there are no values to update, then don't try to update the database

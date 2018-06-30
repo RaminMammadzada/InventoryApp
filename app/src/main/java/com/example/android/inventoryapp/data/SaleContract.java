@@ -17,7 +17,7 @@ public final class SaleContract {
      * content authority is the package name for the app, which is guaranteed to be unique on the
      * device.
      */
-    public static final String CONTENT_AUTHORITY = "com.example.android.inventory";
+    public static final String CONTENT_AUTHORITY = "com.example.android.sales";
 
     /**
      * Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
@@ -100,13 +100,13 @@ public final class SaleContract {
         /**
          * Possible values for the supplier.
          */
-        public static final int KAMUEL = 0;
-        public static final int WALKAIR = 1;
-        public static final int DEPEDRO = 2;
-        public static final int NIKE = 3;
-        public static final int FOREX = 4;
-        public static final int FORSCLASS = 5;
-        public static final int UNKNOWN = 6;
+        public static final int UNKNOWN = 0;
+        public static final int KAMUEL = 1;
+        public static final int WALKAIR = 2;
+        public static final int DEPEDRO = 3;
+        public static final int NIKE = 4;
+        public static final int FOREX = 5;
+        public static final int FORSCLASS = 6;
 
         /**
          * Returns whether or not the given gender is {@link #KAMUEL}, {@link #WALKAIR},

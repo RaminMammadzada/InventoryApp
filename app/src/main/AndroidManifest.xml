@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".StoreActivity"
+            android:name=".ui.ProductsActivity"
             android:label="@string/label_store">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -18,18 +18,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddProductActivity"
+            android:name=".ui.AddEditProductActivity"
             android:label="@string/label_new_product"
             android:theme="@style/EditorTheme"
-            android:parentActivityName=".StoreActivity" >
+            android:parentActivityName=".ui.ProductsActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".StoreActivity" />
+                android:value=".ui.ProductsActivity" />
         </activity>
 
         <activity
-            android:name=".SalesActivity"
+            android:name=".ui.SalesActivity"
             android:label="@string/label_sales">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -37,15 +37,23 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddSaleActivity"
+            android:name=".ui.AddEditSaleActivity"
             android:label="@string/label_new_sale"
             android:theme="@style/EditorTheme"
-            android:parentActivityName=".SalesActivity" >
+            android:parentActivityName=".ui.SalesActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".SalesActivity" />
+                android:value=".ui.SalesActivity" />
         </activity>
+        <provider
+            android:name=".data.ProductProvider"
+            android:authorities="com.example.android.products"
+            android:exported="false" />
+        <provider
+            android:name=".data.SaleProvider"
+            android:authorities="com.example.android.sales"
+            android:exported="false" />
     </application>
 
 </manifest>

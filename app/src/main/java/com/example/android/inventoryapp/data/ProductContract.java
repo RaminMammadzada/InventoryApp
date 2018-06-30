@@ -8,11 +8,11 @@ import android.provider.BaseColumns;
 /**
  * API Contract for the Inventory app.
  */
-public final class StoreContract {
+public final class ProductContract {
 
     // To prevent someone from accidentally instantiating the contract class,
     // give it an empty constructor.
-    private StoreContract() {}
+    private ProductContract() {}
 
     /**
      * The "Content authority" is a name for the entire content provider, similar to the
@@ -20,7 +20,7 @@ public final class StoreContract {
      * content authority is the package name for the app, which is guaranteed to be unique on the
      * device.
      */
-    public static final String CONTENT_AUTHORITY = "com.example.android.inventory";
+    public static final String CONTENT_AUTHORITY = "com.example.android.products";
 
     /**
      * Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
@@ -111,13 +111,13 @@ public final class StoreContract {
         /**
          * Possible value for the supplier.
          */
-        public static final int KAMUEL = 0;
-        public static final int WALKAIR = 1;
-        public static final int DEPEDRO = 2;
-        public static final int NIKE = 3;
-        public static final int FOREX = 4;
-        public static final int FORSCLASS = 5;
-        public static final int UNKNOWN = 6;
+        public static final int UNKNOWN = 0;
+        public static final int KAMUEL = 1;
+        public static final int WALKAIR = 2;
+        public static final int DEPEDRO = 3;
+        public static final int NIKE = 4;
+        public static final int FOREX = 5;
+        public static final int FORSCLASS = 6;
 
         /**
          * Returns whether or not the given gender is {@link #KAMUEL}, {@link #WALKAIR},
