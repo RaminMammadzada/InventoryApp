@@ -22,7 +22,7 @@ import com.example.android.inventoryapp.data.SalesAndStoreDbHelper;
 /**
  * Allows user to create a new product or edit an existing one.
  */
-public class AddProductToStoreActivity extends AppCompatActivity {
+public class AddProductActivity extends AppCompatActivity {
 
     /**
      * EditText field to enter the product's name

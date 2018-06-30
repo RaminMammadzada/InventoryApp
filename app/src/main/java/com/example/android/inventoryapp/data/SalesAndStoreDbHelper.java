@@ -13,6 +13,8 @@ import com.example.android.inventoryapp.data.SaleContract.SaleEntry;
  */
 public class SalesAndStoreDbHelper extends SQLiteOpenHelper {
 
+    public static final String LOG_TAG = SalesAndStoreDbHelper.class.getSimpleName();
+
     /** Name of the database file */
     private static final String DATABASE_NAME = "inventory2.db";
 

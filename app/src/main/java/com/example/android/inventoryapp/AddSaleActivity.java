@@ -21,7 +21,7 @@ import com.example.android.inventoryapp.data.SaleContract.SaleEntry;
 /**
  * Allows user to create a new product or edit an existing one.
  */
-public class AddSaleToSalesActivity  extends AppCompatActivity{
+public class AddSaleActivity extends AppCompatActivity{
 
     /**
      * EditText field to enter the product's name
@@ -117,7 +117,7 @@ public class AddSaleToSalesActivity  extends AppCompatActivity{
     /**
      * Get user input from editor and save new product into database.
      */
-    private Boolean insertProduct() {
+    private Boolean insertSale() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
@@ -160,11 +160,12 @@ public class AddSaleToSalesActivity  extends AppCompatActivity{
         // Show a toast message depending on whether or not the insertion was successful
         if (newRowId == -1) {
             // If the row ID is -1, then there was an error with insertion.
-            Toast.makeText( this, "Error with saving product", Toast.LENGTH_SHORT ).show();
+            Toast.makeText( this, "Error with saving sale", Toast.LENGTH_SHORT ).show();
         } else {
             // Otherwise, the insertion was successful and we can display a toast with the row ID.
-            Toast.makeText( this, "Product saved with row id: " + newRowId, Toast.LENGTH_SHORT ).show();
+            Toast.makeText( this, "Sale saved with row id: " + newRowId, Toast.LENGTH_SHORT ).show();
         }
+
         return true;
     }
 
@@ -183,7 +184,7 @@ public class AddSaleToSalesActivity  extends AppCompatActivity{
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Save sale to database
-                if (!insertProduct()) {
+                if (!insertSale()) {
                     // saying to onOptionsItemSelected that user clicked button
                     return true;
                 }

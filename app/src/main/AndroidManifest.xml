@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddProductToStoreActivity"
+            android:name=".AddProductActivity"
             android:label="@string/label_new_product"
             android:theme="@style/EditorTheme"
             android:parentActivityName=".StoreActivity" >
@@ -37,7 +37,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddSaleToSalesActivity"
+            android:name=".AddSaleActivity"
             android:label="@string/label_new_sale"
             android:theme="@style/EditorTheme"
             android:parentActivityName=".SalesActivity" >

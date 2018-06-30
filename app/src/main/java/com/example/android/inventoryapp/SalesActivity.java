@@ -1,6 +1,5 @@
 package com.example.android.inventoryapp;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,8 +13,6 @@ import android.support.design.widget.FloatingActionButton;
 
 import com.example.android.inventoryapp.data.SalesAndStoreDbHelper;
 
-import com.example.android.inventoryapp.data.StoreContract;
-import com.example.android.inventoryapp.data.StoreContract.ProductEntry;
 import com.example.android.inventoryapp.data.SaleContract.SaleEntry;
 
 
@@ -34,12 +31,12 @@ public class SalesActivity extends AppCompatActivity {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_sales );
 
-        // Setup FAB to open AddProductToStoreActivity
+        // Setup FAB to open AddProductActivity
         FloatingActionButton fab = (FloatingActionButton) findViewById( R.id.fab );
         fab.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent( SalesActivity.this, AddSaleToSalesActivity.class );
+                Intent intent = new Intent( SalesActivity.this, AddSaleActivity.class );
                 startActivity( intent );
             }
         } );
