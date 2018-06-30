@@ -2,6 +2,7 @@ package com.example.android.inventoryapp.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.renderscript.Sampler;
 import android.support.v4.widget.CursorAdapter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,8 +15,8 @@ import com.example.android.inventoryapp.data.ProductContract.ProductEntry;
 
 /**
  * {@link ProductCursorAdapter} is an adapter for a list or grid view
- * that uses a {@link Cursor} of pet data as its data source. This adapter knows
- * how to create list items for each row of pet data in the {@link Cursor}.
+ * that uses a {@link Cursor} of product data as its data source. This adapter knows
+ * how to create list items for each row of product data in the {@link Cursor}.
  */
 public class ProductCursorAdapter extends CursorAdapter{
     /**
@@ -44,8 +45,8 @@ public class ProductCursorAdapter extends CursorAdapter{
     }
 
     /**
-     * This method binds the pet data (in the current row pointed to by cursor) to the given
-     * list item layout. For example, the name for the current pet can be set on the name TextView
+     * This method binds the product data (in the current row pointed to by cursor) to the given
+     * list item layout. For example, the name for the current product can be set on the name TextView
      * in the list item layout.
      *
      * @param view    Existing view, returned earlier by newView() method
@@ -59,22 +60,47 @@ public class ProductCursorAdapter extends CursorAdapter{
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
         TextView summaryTextView = (TextView) view.findViewById(R.id.summary);
 
-        // Find the columns of pet attributes that we're interested in
+        // Find the columns of product attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_NAME);
         int supplierColumnIndex = cursor.getColumnIndex( ProductEntry.COLUMN_SUPPLIER_NAME);
 
-        // Read the pet attributes from the Cursor for the current pet
+        // Read the product attributes from the Cursor for the current product
         String saleProductName = cursor.getString(nameColumnIndex);
-        String saleSupplierName = cursor.getString(supplierColumnIndex);
+        int saleSupplierName = cursor.getInt(supplierColumnIndex);
 
-        // If the pet breed is empty string or null, then use some default text
-        // that says "Unknown breed", so the TextView isn't blank.
-        if (TextUtils.isEmpty(saleSupplierName)) {
-            saleSupplierName = "Unkown_Supplier";
+        String saleSupplierNameString = "";
+        switch (saleSupplierName) {
+            case ProductEntry.UNKNOWN:
+                saleSupplierNameString = "UNKNOWN";
+                break;
+            case ProductEntry.KAMUEL:
+                saleSupplierNameString = "KAMUEL";
+                break;
+            case ProductEntry.WALKAIR:
+                saleSupplierNameString = "WALKAIR";
+                break;
+            case ProductEntry.DEPEDRO:
+                saleSupplierNameString = "DEPEDRO";
+                break;
+            case ProductEntry.NIKE:
+                saleSupplierNameString = "NIKE";
+                break;
+            case ProductEntry.FOREX:
+                saleSupplierNameString = "FOREX";
+                break;
+            case ProductEntry.FORSCLASS:
+                saleSupplierNameString = "FORSCLASS";
+                break;
+        }
+        
+        // If the product breed is empty string or null, then use some default text
+        // that says "Unknown Supplier", so the TextView isn't blank.
+        if (TextUtils.isEmpty(saleSupplierNameString)) {
+            saleSupplierNameString = "Unkown Supplier";
         }
 
-        // Update the TextViews with the attributes for the current pet
+        // Update the TextViews with the attributes for the current product
         nameTextView.setText(saleProductName);
-        summaryTextView.setText(saleSupplierName);
+        summaryTextView.setText(saleSupplierNameString);
     }
 }

@@ -254,8 +254,8 @@ public class ProductProvider extends ContentProvider {
         // If the {@link ProductEntry#COLUMN_PRODUCT_PRICE} key is present,
         // check that the gender value is valid.
         if (values.containsKey(ProductEntry.COLUMN_PRODUCT_PRICE)) {
-            Integer gender = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_PRICE);
-            if (gender == null) {
+            Integer price = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_PRICE);
+            if (price == null) {
                 throw new IllegalArgumentException("Sale requires valid price");
             }
         }
@@ -265,7 +265,7 @@ public class ProductProvider extends ContentProvider {
         if (values.containsKey(ProductEntry.COLUMN_PRODUCT_QUANTITY)) {
             // Check that the weight is greater than or equal to 0 kg
             Integer quantity = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_QUANTITY);
-            if (quantity != null && quantity < 0) {
+            if (quantity == null && quantity < 0) {
                 throw new IllegalArgumentException("Sale requires valid quantity");
             }
         }
@@ -275,7 +275,7 @@ public class ProductProvider extends ContentProvider {
         if (values.containsKey(ProductEntry.COLUMN_SUPPLIER_NAME)) {
             // Check that the weight is greater than or equal to 0 kg
             Integer supplier = values.getAsInteger(ProductEntry.COLUMN_SUPPLIER_NAME);
-            if (supplier != null || !ProductEntry.isValidSupplier(supplier)) {
+            if (supplier == null || !ProductEntry.isValidSupplier(supplier)) {
                 throw new IllegalArgumentException("Product requires valid supplier");
             }
         }

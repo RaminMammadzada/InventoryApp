@@ -65,18 +65,43 @@ public class SaleCursorAdapter  extends CursorAdapter{
         int nameColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_PRODUCT_NAME);
         int supplierColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_SUPPLIER_NAME);
 
-        // Read the pet attributes from the Cursor for the current pet
-        String saleProductName = cursor.getString(nameColumnIndex);
-        String saleSupplierName = cursor.getString(supplierColumnIndex);
+        // Read the sale attributes from the Cursor for the current sale
+        String saleSaleName = cursor.getString(nameColumnIndex);
+        int saleSupplierName = cursor.getInt(supplierColumnIndex);
 
-        // If the pet breed is empty string or null, then use some default text
-        // that says "Unknown breed", so the TextView isn't blank.
-        if (TextUtils.isEmpty(saleSupplierName)) {
-            saleSupplierName = "Unkown_Supplier";
+        String saleSupplierNameString = "";
+        switch (saleSupplierName) {
+            case SaleEntry.UNKNOWN:
+                saleSupplierNameString = "UNKNOWN";
+                break;
+            case SaleEntry.KAMUEL:
+                saleSupplierNameString = "KAMUEL";
+                break;
+            case SaleEntry.WALKAIR:
+                saleSupplierNameString = "WALKAIR";
+                break;
+            case SaleEntry.DEPEDRO:
+                saleSupplierNameString = "DEPEDRO";
+                break;
+            case SaleEntry.NIKE:
+                saleSupplierNameString = "NIKE";
+                break;
+            case SaleEntry.FOREX:
+                saleSupplierNameString = "FOREX";
+                break;
+            case SaleEntry.FORSCLASS:
+                saleSupplierNameString = "FORSCLASS";
+                break;
+        }
+
+        // If the sale breed is empty string or null, then use some default text
+        // that says "Unknown Supplier", so the TextView isn't blank.
+        if (TextUtils.isEmpty(saleSupplierNameString)) {
+            saleSupplierNameString = "Unkown Supplier";
         }
 
         // Update the TextViews with the attributes for the current pet
-        nameTextView.setText(saleProductName);
+        nameTextView.setText(saleSaleName);
         summaryTextView.setText(saleSupplierName);
     }
 }
