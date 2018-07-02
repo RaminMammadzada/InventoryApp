@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.android.inventoryapp.data.SaleContract.SaleEntry;
+import com.example.android.inventoryapp.data.ProductContract.ProductEntry;
 
 public class SaleProvider extends ContentProvider {
 
@@ -143,20 +144,20 @@ public class SaleProvider extends ContentProvider {
      */
     private Uri insertSale(Uri uri, ContentValues values) {
         // Check that the name is not null
-        String name = values.getAsString(SaleEntry.COLUMN_SALE_PRODUCT_NAME);
-        if (name == null) {
+        String saleProductName = values.getAsString(SaleEntry.COLUMN_SALE_PRODUCT_NAME);
+        if (saleProductName == null) {
             throw new IllegalArgumentException("Sale requires a product name");
         }
 
         // Check that the price is valid
-        Integer price = values.getAsInteger(SaleEntry.COLUMN_SALE_PRICE);
-        if (price == null && price < 0) {
+        Integer saleProductPrice = values.getAsInteger(SaleEntry.COLUMN_SALE_PRICE);
+        if (saleProductPrice == null && saleProductPrice < 0) {
             throw new IllegalArgumentException("Sale requires a price");
         }
 
         // If the quantity is provided, check that it's greater than or equal to 0 kg
-        Integer quantity = values.getAsInteger(SaleEntry.COLUMN_SALE_QUANTITY);
-        if (quantity != null && quantity < 0) {
+        Integer saleProductQuantity = values.getAsInteger(SaleEntry.COLUMN_SALE_QUANTITY);
+        if (saleProductQuantity != null && saleProductQuantity < 0) {
             throw new IllegalArgumentException("Sale requires valid quantity");
         }
 
@@ -165,8 +166,6 @@ public class SaleProvider extends ContentProvider {
         if (supplier == null || !SaleEntry.isValidSupplier(supplier)) {
             throw new IllegalArgumentException("Sale requires valid supplier");
         }
-
-        // No need to check the breed, any value is valid (including null).
 
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
@@ -179,8 +178,42 @@ public class SaleProvider extends ContentProvider {
             return null;
         }
 
-        // Notify all listeners that the data has changed for the sale content URI
-        getContext().getContentResolver().notifyChange(uri, null);
+        /*//
+        String SELECT_QUERY = "SELECT store.quantity, sale.quantity, " +
+                "FROM a" +
+                "INNER JOIN b ON a.id=b.id;";
+
+        Cursor cursorData = database.rawQuery(SELECT_QUERY, null);
+        //*/
+
+        //
+        // Updating the quantity value in the Product table
+        // New value for one column
+        int currentQuantityInProductTable = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_QUANTITY);
+        int newQuantity = currentQuantityInProductTable - values.getAsInteger(SaleEntry.COLUMN_SALE_QUANTITY);
+        // New value for one column
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity);
+
+        // Which row to update, based on the title
+        String selectionForProductTableUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " LIKE ?";
+        String[] selectionArgsForProductTableUpdate = { values.getAsString(SaleEntry.COLUMN_SALE_QUANTITY) };
+
+        int rowsUpdatedForProductTableUpdate = database.update(
+                ProductEntry.TABLE_NAME,
+                contentValues,
+                selectionForProductTableUpdate,
+                selectionArgsForProductTableUpdate);
+
+
+
+        // If 1 or more rows were updated, then notify all listeners that the data at the
+        // given URI has changed
+        if (rowsUpdatedForProductTableUpdate != 0) {
+            // Notify all listeners that the data has changed for the sale content URI
+            getContext().getContentResolver().notifyChange( uri, null );
+        }
+        //
 
         // Return the new URI with the ID (of the newly inserted row) appended at the end
         return ContentUris.withAppendedId(uri, id);
@@ -257,8 +290,8 @@ public class SaleProvider extends ContentProvider {
         // If the {@link SaleEntry#COLUMN_PET_GENDER} key is present,
         // check that the gender value is valid.
         if (values.containsKey(SaleEntry.COLUMN_SALE_PRICE)) {
-            Integer gender = values.getAsInteger(SaleEntry.COLUMN_SALE_PRICE);
-            if (gender == null) {
+            Integer price = values.getAsInteger(SaleEntry.COLUMN_SALE_PRICE);
+            if (price == null) {
                 throw new IllegalArgumentException("Sale requires valid price");
             }
         }
@@ -278,7 +311,7 @@ public class SaleProvider extends ContentProvider {
         if (values.containsKey(SaleEntry.COLUMN_SALE_SUPPLIER_NAME)) {
             // Check that the weight is greater than or equal to 0 kg
             Integer supplier = values.getAsInteger(SaleEntry.COLUMN_SALE_SUPPLIER_NAME);
-            if (supplier != null || !SaleEntry.isValidSupplier(supplier)) {
+            if (supplier == null || !SaleEntry.isValidSupplier(supplier)) {
                 throw new IllegalArgumentException("Sale requires valid supplier");
             }
         }
@@ -298,6 +331,37 @@ public class SaleProvider extends ContentProvider {
         if (rowsUpdated != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
+
+
+        //
+        // Updating the quantity value in the Product table
+        // New value for one column
+        int currentQuantityInProductTable = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_QUANTITY);
+        int newQuantity = currentQuantityInProductTable - values.getAsInteger(SaleEntry.COLUMN_SALE_QUANTITY);
+        // New value for one column
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity);
+
+        // Which row to update, based on the title
+        String selectionForProductTableUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " LIKE ?";
+        String[] selectionArgsForProductTableUpdate = { values.getAsString(SaleEntry.COLUMN_SALE_QUANTITY) };
+
+        int rowsUpdatedForProductTableUpdate = database.update(
+                ProductEntry.TABLE_NAME,
+                contentValues,
+                selectionForProductTableUpdate,
+                selectionArgsForProductTableUpdate);
+
+
+
+        // If 1 or more rows were updated, then notify all listeners that the data at the
+        // given URI has changed
+        if (rowsUpdatedForProductTableUpdate != 0) {
+            // Notify all listeners that the data has changed for the sale content URI
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        //
+
 
         // Return the number of rows updated
         return rowsUpdated;

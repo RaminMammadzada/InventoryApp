@@ -187,7 +187,7 @@ public class AddEditProductActivity extends AppCompatActivity implements
     /**
      * Get user input from editor and save new product into database.
      */
-    private void saveProduct() {
+    private Boolean saveProduct() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
@@ -203,8 +203,18 @@ public class AddEditProductActivity extends AppCompatActivity implements
                 mSupplierName == ProductEntry.UNKNOWN) {
             // Since no fields were modified, we can return early without creating a new pet.
             // No need to create ContentValues and no need to do any ContentProvider operations.
-            return;
+            return false;
         }
+
+        // These lines check weather all of the field filled or not. If not, it prompts the error messages.
+        Boolean isThereMissingField = false;
+        // checking if there any blank editText or not
+        if(TextUtils.isEmpty(mNameEditText.getText()) ){ mNameEditText.setError( "Name is required!" ); isThereMissingField = true;}
+        else if (TextUtils.isEmpty(mPriceEditText.getText())) { mPriceEditText.setError( "Price is required!" ); isThereMissingField = true;}
+        else if (TextUtils.isEmpty(mQuantityEditText.getText())) { mQuantityEditText.setError( "Quantity is required!" ); isThereMissingField = true;}
+        else if (TextUtils.isEmpty(mSupplierPhone.getText())) {mSupplierPhone.setError( "Phone is required" ); isThereMissingField = true;}
+
+        if(isThereMissingField) return false;
 
 
         // Create a ContentValues object where column names are the keys,
@@ -250,6 +260,7 @@ public class AddEditProductActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             }
         }
+        return true;
     }
 
     @Override
@@ -282,7 +293,10 @@ public class AddEditProductActivity extends AppCompatActivity implements
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Save product to database
-                saveProduct();
+                if (!saveProduct()) {
+                    // saying to onOptionsItemSelected that user clicked button
+                    return true;
+                }
                 // Exit activity
                 finish();
                 return true;

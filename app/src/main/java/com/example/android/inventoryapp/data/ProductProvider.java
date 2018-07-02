@@ -146,7 +146,6 @@ public class ProductProvider extends ContentProvider {
             throw new IllegalArgumentException("Sale requires a product name");
         }
 
-
         // Check that the price is valid
         Integer price = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_PRICE);
         if (price == null && price < 0) {
@@ -162,7 +161,7 @@ public class ProductProvider extends ContentProvider {
         // Check that the supplier name is valid
         Integer supplier = values.getAsInteger(ProductEntry.COLUMN_SUPPLIER_NAME);
         if (supplier == null || !ProductEntry.isValidSupplier(supplier)) {
-            throw new IllegalArgumentException("Sale requires valid supplier");
+            throw new IllegalArgumentException("Product requires valid supplier");
         }
 
         // Get writeable database

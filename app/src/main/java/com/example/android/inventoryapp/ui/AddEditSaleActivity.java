@@ -59,11 +59,6 @@ public class AddEditSaleActivity extends AppCompatActivity implements
     private Spinner mSupplierNameSpinner;
 
     /**
-     * EditText field to enter the supplier's phone number
-     */
-    private EditText mSupplierPhone;
-
-    /**
      * Supplier name. The possible valid values are in the SaleContract.java file:
      * The only possible values are {KAMUEL}, {WALKAIR},
      * {NIKE}, {FOREX}, {FORSCLASS},
@@ -121,7 +116,6 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         mPriceEditText = (EditText) findViewById( R.id.add_price);
         mQuantityEditText = (EditText) findViewById( R.id.add_quantity );
         mSupplierNameSpinner = (Spinner) findViewById( R.id.spinner_supplier );
-        mSupplierPhone = (EditText) findViewById( R.id.add_supplier_phone );
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -130,7 +124,6 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         mPriceEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mSupplierNameSpinner.setOnTouchListener(mTouchListener);
-        mSupplierPhone.setOnTouchListener(mTouchListener);
 
         setupSpinner();
     }
@@ -187,25 +180,31 @@ public class AddEditSaleActivity extends AppCompatActivity implements
     /**
      * Get user input from editor and save new sale into database.
      */
-    private void saveSale() {
+    private Boolean saveSale() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
-        String supplierPhoneString = mSupplierPhone.getText().toString().trim();
 
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank
         if (mCurrentSaleUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supplierPhoneString) &&
-                mSupplierName == SaleEntry.UNKNOWN) {
+                TextUtils.isEmpty(quantityString) && mSupplierName == SaleEntry.UNKNOWN) {
             // Since no fields were modified, we can return early without creating a new pet.
             // No need to create ContentValues and no need to do any ContentProvider operations.
-            return;
+            return false;
         }
 
+        // These lines check weather all of the field filled or not. If not, it prompts the error messages.
+        Boolean isThereMissingField = false;
+        // checking if there any blank editText or not
+        if(TextUtils.isEmpty(mNameEditText.getText()) ){ mNameEditText.setError( "Name is required!" ); isThereMissingField = true;}
+        else if (TextUtils.isEmpty(mPriceEditText.getText())) { mPriceEditText.setError( "Price is required!" ); isThereMissingField = true;}
+        else if (TextUtils.isEmpty(mQuantityEditText.getText())) { mQuantityEditText.setError( "Quantity is required!" ); isThereMissingField = true;}
+
+        if(isThereMissingField) return false;
 
         // Create a ContentValues object where column names are the keys,
         // and pet attributes from the editor are the values.
@@ -249,6 +248,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             }
         }
+        return true;
     }
 
     @Override
@@ -281,7 +281,10 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Save sale to database
-                saveSale();
+                if (!saveSale()) {
+                    // saying to onOptionsItemSelected that user clicked button
+                    return true;
+                }
                 // Exit activity
                 finish();
                 return true;
@@ -427,7 +430,6 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         mPriceEditText.setText("");
         mQuantityEditText.setText("");
         mSupplierNameSpinner.setSelection( 0 ); // Select 'UNKNOWN' supplier
-        mSupplierPhone.setText("");
 
     }
 

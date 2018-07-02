@@ -38,7 +38,7 @@
             <!-- Price field -->
             <EditText
                 android:id="@+id/add_price"
-                android:hint="@string/product_quantity_hint"
+                android:hint="@string/product_price_hint"
                 android:inputType="number"
                 style="@style/EditorFieldStyle" />
 

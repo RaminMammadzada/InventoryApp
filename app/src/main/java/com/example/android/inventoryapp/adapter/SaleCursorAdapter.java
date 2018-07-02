@@ -66,7 +66,7 @@ public class SaleCursorAdapter  extends CursorAdapter{
         int supplierColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_SUPPLIER_NAME);
 
         // Read the sale attributes from the Cursor for the current sale
-        String saleSaleName = cursor.getString(nameColumnIndex);
+        String saleProductName = cursor.getString(nameColumnIndex);
         int saleSupplierName = cursor.getInt(supplierColumnIndex);
 
         String saleSupplierNameString = "";
@@ -101,7 +101,7 @@ public class SaleCursorAdapter  extends CursorAdapter{
         }
 
         // Update the TextViews with the attributes for the current pet
-        nameTextView.setText(saleSaleName);
-        summaryTextView.setText(saleSupplierName);
+        nameTextView.setText(saleProductName);
+        summaryTextView.setText(saleSupplierNameString);
     }
 }
