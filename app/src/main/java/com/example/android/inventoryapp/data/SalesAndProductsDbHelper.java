@@ -3,7 +3,6 @@ package com.example.android.inventoryapp.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.android.inventoryapp.data.ProductContract.ProductEntry;
 import com.example.android.inventoryapp.data.SaleContract.SaleEntry;
@@ -11,9 +10,9 @@ import com.example.android.inventoryapp.data.SaleContract.SaleEntry;
 /**
  * Database helper for Inventory app. Manages database creation and version management.
  */
-public class SalesAndStoreDbHelper extends SQLiteOpenHelper {
+public class SalesAndProductsDbHelper extends SQLiteOpenHelper {
 
-    public static final String LOG_TAG = SalesAndStoreDbHelper.class.getSimpleName();
+    public static final String LOG_TAG = SalesAndProductsDbHelper.class.getSimpleName();
 
     /** Name of the database file */
     private static final String DATABASE_NAME = "inventory2.db";
@@ -24,11 +23,11 @@ public class SalesAndStoreDbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     /**
-     * Constructs a new instance of {@link SalesAndStoreDbHelper}.
+     * Constructs a new instance of {@link SalesAndProductsDbHelper}.
      *
      * @param context of the app
      */
-    public SalesAndStoreDbHelper(Context context) {
+    public SalesAndProductsDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

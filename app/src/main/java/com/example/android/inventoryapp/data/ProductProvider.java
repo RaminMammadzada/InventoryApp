@@ -51,11 +51,11 @@ public class ProductProvider extends ContentProvider {
     }
 
     /** Database helper object */
-    private SalesAndStoreDbHelper mDbHelper;
+    private SalesAndProductsDbHelper mDbHelper;
 
     @Override
     public boolean onCreate() {
-        mDbHelper = new SalesAndStoreDbHelper(getContext());
+        mDbHelper = new SalesAndProductsDbHelper(getContext());
         return true;
     }
 

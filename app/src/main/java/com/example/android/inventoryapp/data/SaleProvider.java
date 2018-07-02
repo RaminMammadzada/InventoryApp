@@ -54,11 +54,11 @@ public class SaleProvider extends ContentProvider {
     }
 
     /** Database helper object */
-    private SalesAndStoreDbHelper mDbHelper;
+    private SalesAndProductsDbHelper mDbHelper;
 
     @Override
     public boolean onCreate() {
-        mDbHelper = new SalesAndStoreDbHelper(getContext());
+        mDbHelper = new SalesAndProductsDbHelper(getContext());
         return true;
     }
 
@@ -178,30 +178,46 @@ public class SaleProvider extends ContentProvider {
             return null;
         }
 
-        /*//
-        String SELECT_QUERY = "SELECT store.quantity, sale.quantity, " +
-                "FROM a" +
-                "INNER JOIN b ON a.id=b.id;";
+        // Notify all listeners that the data has changed for the sale content URI
+        getContext().getContentResolver().notifyChange( uri, null );
 
-        Cursor cursorData = database.rawQuery(SELECT_QUERY, null);
-        //*/
 
-        //
+
+        // For accessing the previous value of the quantity on the product table
+        // Get writeable database
+        SQLiteDatabase databaseForReading = mDbHelper.getReadableDatabase();
+        //specify the columns to be fetched
+        String[] columns = {ProductEntry.COLUMN_PRODUCT_QUANTITY,};
+        //Select condition
+        String selection = ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
+        //Arguments for selection
+        String[] selectionArgs = {saleProductName};
+
+        int currentQuantityInProductTable = 0;
+
+        Cursor cursor = databaseForReading.query(ProductEntry.TABLE_NAME, columns, selection,
+                selectionArgs, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int indexForQuantity = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_QUANTITY );
+            currentQuantityInProductTable  = cursor.getInt( indexForQuantity );
+
+        }
+
+
         // Updating the quantity value in the Product table
         // New value for one column
-        int currentQuantityInProductTable = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_QUANTITY);
         int newQuantity = currentQuantityInProductTable - values.getAsInteger(SaleEntry.COLUMN_SALE_QUANTITY);
         // New value for one column
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity);
+        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity);
 
         // Which row to update, based on the title
-        String selectionForProductTableUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " LIKE ?";
-        String[] selectionArgsForProductTableUpdate = { values.getAsString(SaleEntry.COLUMN_SALE_QUANTITY) };
+        String selectionForProductTableUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
+        String[] selectionArgsForProductTableUpdate = { saleProductName};
 
         int rowsUpdatedForProductTableUpdate = database.update(
                 ProductEntry.TABLE_NAME,
-                contentValues,
+                values,
                 selectionForProductTableUpdate,
                 selectionArgsForProductTableUpdate);
 
@@ -333,22 +349,61 @@ public class SaleProvider extends ContentProvider {
         }
 
 
-        //
+        // For accessing the previous value of the quantity on the product table
+        // Get readable database
+        SQLiteDatabase databaseForReading = mDbHelper.getReadableDatabase();
+        //specify the columns to be fetched
+        String[] columns = {ProductEntry.COLUMN_PRODUCT_QUANTITY,};
+        //Select condition
+        String selectionInUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
+        //Arguments for selection
+        String saleProductName = values.getAsString(SaleEntry.COLUMN_SALE_PRODUCT_NAME);
+        String[] selectionArgsInUpdate = {saleProductName};
+
+        int currentQuantityInProductTable = 0;
+
+        Cursor cursor = databaseForReading.query(ProductEntry.TABLE_NAME, columns, selectionInUpdate,
+                selectionArgsInUpdate, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int indexForQuantity = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_QUANTITY );
+            currentQuantityInProductTable  = cursor.getInt( indexForQuantity );
+
+        }
+
+        // get current quantity information from the sales table
+        //specify the columns to be fetched
+        String[] columnsNew = {SaleEntry.COLUMN_SALE_QUANTITY,};
+        //Select condition
+        String selectionInUpdateNew = SaleEntry.COLUMN_SALE_PRODUCT_NAME + " = ?";
+        //Arguments for selection
+        String saleProductNameNew = values.getAsString(SaleEntry.COLUMN_SALE_PRODUCT_NAME);
+        String[] selectionArgsInUpdateNew = {saleProductNameNew};
+
+        int currentQuantityInSaleTable = 0;
+
+        Cursor cursorNew = databaseForReading.query(ProductEntry.TABLE_NAME, columnsNew, selectionInUpdateNew,
+                selectionArgsInUpdateNew, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            int indexForQuantity = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_QUANTITY );
+            currentQuantityInSaleTable  = cursor.getInt( indexForQuantity );
+
+        }
+
         // Updating the quantity value in the Product table
         // New value for one column
-        int currentQuantityInProductTable = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_QUANTITY);
-        int newQuantity = currentQuantityInProductTable - values.getAsInteger(SaleEntry.COLUMN_SALE_QUANTITY);
+        int newQuantity = currentQuantityInProductTable - Math.abs(values.getAsInteger(SaleEntry.COLUMN_SALE_QUANTITY) - currentQuantityInSaleTable);
         // New value for one column
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity);
+        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity);
 
         // Which row to update, based on the title
-        String selectionForProductTableUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " LIKE ?";
-        String[] selectionArgsForProductTableUpdate = { values.getAsString(SaleEntry.COLUMN_SALE_QUANTITY) };
+        String selectionForProductTableUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
+        String[] selectionArgsForProductTableUpdate = { saleProductName};
 
         int rowsUpdatedForProductTableUpdate = database.update(
                 ProductEntry.TABLE_NAME,
-                contentValues,
+                values,
                 selectionForProductTableUpdate,
                 selectionArgsForProductTableUpdate);
 
@@ -358,7 +413,7 @@ public class SaleProvider extends ContentProvider {
         // given URI has changed
         if (rowsUpdatedForProductTableUpdate != 0) {
             // Notify all listeners that the data has changed for the sale content URI
-            getContext().getContentResolver().notifyChange(uri, null);
+            getContext().getContentResolver().notifyChange( uri, null );
         }
         //
 
