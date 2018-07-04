@@ -106,5 +106,8 @@
     <string name="editor_delete_product_failed">Error with deleting product</string>
     <!-- Toast message in editor when current product has failed to be deleted [CHAR LIMIT=NONE] -->
     <string name="editor_delete_sale_failed">Error with deleting sale</string>
+    <string name="price_text_view">Price:</string>
+    <string name="quantity_text_view">Quantity:</string>
+    <string name="sale_button_text">SALE</string>
 
 </resources>

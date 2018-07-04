@@ -59,49 +59,24 @@ public class SaleCursorAdapter  extends CursorAdapter{
     public void bindView(View view, Context context, Cursor cursor) {
         // Find individual views that we want to modify in the list item layout
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
-        TextView summaryTextView = (TextView) view.findViewById(R.id.summary);
+        TextView priceTextView = (TextView) view.findViewById(R.id.price);
+        TextView quantityTextView = (TextView) view.findViewById( R.id.quantity );
 
-        // Find the columns of pet attributes that we're interested in
+        // Find the columns of product attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_PRODUCT_NAME);
-        int supplierColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_SUPPLIER_NAME);
+        int priceColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_PRICE);
+        int quantityColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_QUANTITY);
 
-        // Read the sale attributes from the Cursor for the current sale
+        // Read the product attributes from the Cursor for the current product
         String saleProductName = cursor.getString(nameColumnIndex);
-        int saleSupplierName = cursor.getInt(supplierColumnIndex);
+        int saleProductPrice = cursor.getInt(priceColumnIndex);
+        int saleProductQuantity = cursor.getInt(quantityColumnIndex);
 
-        String saleSupplierNameString = "";
-        switch (saleSupplierName) {
-            case SaleEntry.UNKNOWN:
-                saleSupplierNameString = "UNKNOWN";
-                break;
-            case SaleEntry.KAMUEL:
-                saleSupplierNameString = "KAMUEL";
-                break;
-            case SaleEntry.WALKAIR:
-                saleSupplierNameString = "WALKAIR";
-                break;
-            case SaleEntry.DEPEDRO:
-                saleSupplierNameString = "DEPEDRO";
-                break;
-            case SaleEntry.NIKE:
-                saleSupplierNameString = "NIKE";
-                break;
-            case SaleEntry.FOREX:
-                saleSupplierNameString = "FOREX";
-                break;
-            case SaleEntry.FORSCLASS:
-                saleSupplierNameString = "FORSCLASS";
-                break;
-        }
 
-        // If the sale breed is empty string or null, then use some default text
-        // that says "Unknown Supplier", so the TextView isn't blank.
-        if (TextUtils.isEmpty(saleSupplierNameString)) {
-            saleSupplierNameString = "Unkown Supplier";
-        }
-
-        // Update the TextViews with the attributes for the current pet
+        // Update the TextViews with the attributes for the current product
         nameTextView.setText(saleProductName);
-        summaryTextView.setText(saleSupplierNameString);
+        priceTextView.setText(String.valueOf( saleProductPrice ));
+        quantityTextView.setText(String.valueOf( saleProductQuantity ));
+
     }
 }

@@ -152,10 +152,10 @@ public class SalesActivity extends AppCompatActivity implements LoaderManager.Lo
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         // Define a projection that specifies the columns from the table we care about.
-        String[] projection = {
-                SaleEntry._ID,
+        String[] projection = {SaleEntry._ID,
                 SaleEntry.COLUMN_SALE_PRODUCT_NAME,
-                SaleEntry.COLUMN_SALE_SUPPLIER_NAME };
+                SaleEntry.COLUMN_SALE_PRICE,
+                SaleEntry.COLUMN_SALE_QUANTITY };
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context

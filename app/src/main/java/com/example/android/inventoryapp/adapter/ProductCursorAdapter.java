@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.android.inventoryapp.R;
@@ -58,49 +59,26 @@ public class ProductCursorAdapter extends CursorAdapter{
     public void bindView(View view, Context context, Cursor cursor) {
         // Find individual views that we want to modify in the list item layout
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
-        TextView summaryTextView = (TextView) view.findViewById(R.id.summary);
+        TextView priceTextView = (TextView) view.findViewById(R.id.price);
+        TextView quantityTextView = (TextView) view.findViewById( R.id.quantity );
 
         // Find the columns of product attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_NAME);
-        int supplierColumnIndex = cursor.getColumnIndex( ProductEntry.COLUMN_SUPPLIER_NAME);
+        int priceColumnIndex = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_PRICE);
+        int quantityColumnIndex = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_QUANTITY);
 
         // Read the product attributes from the Cursor for the current product
-        String saleProductName = cursor.getString(nameColumnIndex);
-        int saleSupplierName = cursor.getInt(supplierColumnIndex);
-
-        String saleSupplierNameString = "";
-        switch (saleSupplierName) {
-            case ProductEntry.UNKNOWN:
-                saleSupplierNameString = "UNKNOWN";
-                break;
-            case ProductEntry.KAMUEL:
-                saleSupplierNameString = "KAMUEL";
-                break;
-            case ProductEntry.WALKAIR:
-                saleSupplierNameString = "WALKAIR";
-                break;
-            case ProductEntry.DEPEDRO:
-                saleSupplierNameString = "DEPEDRO";
-                break;
-            case ProductEntry.NIKE:
-                saleSupplierNameString = "NIKE";
-                break;
-            case ProductEntry.FOREX:
-                saleSupplierNameString = "FOREX";
-                break;
-            case ProductEntry.FORSCLASS:
-                saleSupplierNameString = "FORSCLASS";
-                break;
-        }
-        
-        // If the product breed is empty string or null, then use some default text
-        // that says "Unknown Supplier", so the TextView isn't blank.
-        if (TextUtils.isEmpty(saleSupplierNameString)) {
-            saleSupplierNameString = "Unkown Supplier";
-        }
+        String productProductName = cursor.getString(nameColumnIndex);
+        int productProductPrice = cursor.getInt(priceColumnIndex);
+        int productProductQuantity = cursor.getInt(quantityColumnIndex);
 
         // Update the TextViews with the attributes for the current product
-        nameTextView.setText(saleProductName);
-        summaryTextView.setText(saleSupplierNameString);
+        nameTextView.setText(productProductName);
+        priceTextView.setText(String.valueOf( productProductPrice ));
+        quantityTextView.setText(String.valueOf( productProductQuantity ));
+
+        // Setting SALE button and making it visible
+        Button saleButton = (Button) view.findViewById( R.id.sale_button );
+        saleButton.setVisibility( View.VISIBLE );
     }
 }
