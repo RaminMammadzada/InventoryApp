@@ -9,4 +9,5 @@
 
     <!-- Primary dark color for the editor -->
     <color name="editorColorPrimaryDark">#394450</color>
+    <color name="colorSale">#B8D5F6</color>
 </resources>

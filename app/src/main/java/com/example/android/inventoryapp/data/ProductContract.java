@@ -57,8 +57,8 @@ public final class ProductContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PRODUCTS;
 
-        /** Name of database table for products in the store */
-        public final static String TABLE_NAME = "store";
+        /** Name of database table for products */
+        public final static String TABLE_NAME = "products";
 
         /**
          * Unique ID number for the product (only for use in the database table).
