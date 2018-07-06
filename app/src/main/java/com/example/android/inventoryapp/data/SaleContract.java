@@ -97,11 +97,11 @@ public final class SaleContract {
         public final static String COLUMN_SALE_SUPPLIER_NAME = "supplierName";
 
         /**
-         * Product supplier's phone number.
+         * Supplier phone of the sold product(s).
          *
          * Type: TEXT
          */
-        public final static String COLUMN_SUPPLIER_PHONE ="supplierPhone";
+        public final static String COLUMN_SALE_SUPPLIER_PHONE = "supplierPhone";
 
         /**
          * Possible values for the supplier.

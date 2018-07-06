@@ -16,19 +16,13 @@ import com.example.android.inventoryapp.data.ProductContract.ProductEntry;
 
 public class SaleProvider extends ContentProvider {
 
-    /**
-     * Tag for the log messages
-     */
+    /** Tag for the log messages */
     public static final String LOG_TAG = SaleProvider.class.getSimpleName();
 
-    /**
-     * URI matcher code for the content URI for the pets table
-     */
+    /** URI matcher code for the content URI for the pets table */
     private static final int SALES = 100;
 
-    /**
-     * URI matcher code for the content URI for a single pet in the pets table
-     */
+    /** URI matcher code for the content URI for a single pet in the pets table */
     private static final int SALE_ID = 101;
 
     /**
@@ -36,7 +30,7 @@ public class SaleProvider extends ContentProvider {
      * The input passed into the constructor represents the code to return for the root URI.
      * It's common to use NO_MATCH as the input for this case.
      */
-    private static final UriMatcher sUriMatcher = new UriMatcher( UriMatcher.NO_MATCH );
+    private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     // Static initializer. This is run the first time anything is called from this class.
     static {
@@ -47,7 +41,7 @@ public class SaleProvider extends ContentProvider {
         // The content URI of the form "content://com.example.android.pets/pets" will map to the
         // integer code {@link #PETS}. This URI is used to provide access to MULTIPLE rows
         // of the pets table.
-        sUriMatcher.addURI( SaleContract.CONTENT_AUTHORITY, SaleContract.PATH_SALES, SALES );
+        sUriMatcher.addURI(SaleContract.CONTENT_AUTHORITY, SaleContract.PATH_SALES, SALES);
 
         // The content URI of the form "content://com.example.android.pets/pets/#" will map to the
         // integer code {@link #PET_ID}. This URI is used to provide access to ONE single row
@@ -56,23 +50,21 @@ public class SaleProvider extends ContentProvider {
         // In this case, the "#" wildcard is used where "#" can be substituted for an integer.
         // For example, "content://com.example.android.pets/pets/3" matches, but
         // "content://com.example.android.pets/pets" (without a number at the end) doesn't match.
-        sUriMatcher.addURI( SaleContract.CONTENT_AUTHORITY, SaleContract.PATH_SALES + "/#", SALE_ID );
+        sUriMatcher.addURI(SaleContract.CONTENT_AUTHORITY, SaleContract.PATH_SALES + "/#", SALE_ID);
     }
 
-    /**
-     * Database helper object
-     */
+    /** Database helper object */
     private SalesAndProductsDbHelper mDbHelper;
 
     @Override
     public boolean onCreate() {
-        mDbHelper = new SalesAndProductsDbHelper( getContext() );
+        mDbHelper = new SalesAndProductsDbHelper(getContext());
         return true;
     }
 
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query( Uri uri,  String[] projection,  String selection,  String[] selectionArgs,  String sortOrder) {
         // Get readable database
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
@@ -80,14 +72,14 @@ public class SaleProvider extends ContentProvider {
         Cursor cursor;
 
         // Figure out if the URI matcher can match the URI to a specific code
-        int match = sUriMatcher.match( uri );
+        int match = sUriMatcher.match(uri);
         switch (match) {
             case SALES:
                 // For the SALES code, query the sales table directly with the given
                 // projection, selection, selection arguments, and sort order. The cursor
                 // could contain multiple rows of the pets table.
-                cursor = database.query( SaleEntry.TABLE_NAME, projection, selection, selectionArgs,
-                        null, null, sortOrder );
+                cursor = database.query(SaleEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
                 break;
             case SALE_ID:
                 // For the SALE_ID code, extract out the ID from the URI.
@@ -99,21 +91,21 @@ public class SaleProvider extends ContentProvider {
                 // arguments that will fill in the "?". Since we have 1 question mark in the
                 // selection, we have 1 String in the selection arguments' String array.
                 selection = SaleEntry._ID + "=?";
-                selectionArgs = new String[]{String.valueOf( ContentUris.parseId( uri ) )};
+                selectionArgs = new String[] { String.valueOf( ContentUris.parseId(uri)) };
 
                 // This will perform a query on the pets table where the _id equals 3 to return a
                 // Cursor containing that row of the table.
-                cursor = database.query( SaleEntry.TABLE_NAME, projection, selection, selectionArgs,
-                        null, null, sortOrder );
+                cursor = database.query(SaleEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
                 break;
             default:
-                throw new IllegalArgumentException( "Cannot query unknown URI " + uri );
+                throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
 
         // Set notification URI on the Cursor,
         // so we know what content URI the Cursor was created for.
         // If the data at this URI changes, then we know we need to update the Cursor.
-        cursor.setNotificationUri( getContext().getContentResolver(), uri );
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         // Return the cursor
         return cursor;
@@ -122,27 +114,27 @@ public class SaleProvider extends ContentProvider {
 
 
     @Override
-    public String getType(Uri uri) {
-        final int match = sUriMatcher.match( uri );
+    public String getType( Uri uri) {
+        final int match = sUriMatcher.match(uri);
         switch (match) {
             case SALES:
                 return SaleContract.SaleEntry.CONTENT_LIST_TYPE;
             case SALE_ID:
                 return SaleContract.SaleEntry.CONTENT_ITEM_TYPE;
             default:
-                throw new IllegalStateException( "Unknown URI " + uri + " with match " + match );
+                throw new IllegalStateException("Unknown URI " + uri + " with match " + match);
         }
     }
 
 
     @Override
-    public Uri insert(Uri uri, ContentValues contentValues) {
-        final int match = sUriMatcher.match( uri );
+    public Uri insert( Uri uri,  ContentValues contentValues) {
+        final int match = sUriMatcher.match(uri);
         switch (match) {
             case SALES:
-                return insertSale( uri, contentValues );
+                return insertSale(uri, contentValues);
             default:
-                throw new IllegalArgumentException( "Insertion is not supported for " + uri );
+                throw new IllegalArgumentException("Insertion is not supported for " + uri);
         }
     }
 
@@ -152,130 +144,82 @@ public class SaleProvider extends ContentProvider {
      */
     private Uri insertSale(Uri uri, ContentValues values) {
         // Check that the name is not null
-        String saleProductName = values.getAsString( SaleEntry.COLUMN_SALE_PRODUCT_NAME );
+        String saleProductName = values.getAsString(SaleEntry.COLUMN_SALE_PRODUCT_NAME);
         if (saleProductName == null) {
-            throw new IllegalArgumentException( "Sale requires a product name" );
+            throw new IllegalArgumentException("Sale requires a product name");
         }
 
         // Check that the price is valid
-        Integer saleProductPrice = values.getAsInteger( SaleEntry.COLUMN_SALE_PRICE );
+        Integer saleProductPrice = values.getAsInteger(SaleEntry.COLUMN_SALE_PRICE);
         if (saleProductPrice == null && saleProductPrice < 0) {
-            throw new IllegalArgumentException( "Sale requires a price" );
+            throw new IllegalArgumentException("Sale requires a price");
         }
 
         // If the quantity is provided, check that it's greater than or equal to 0 kg
-        Integer saleProductQuantity = values.getAsInteger( SaleEntry.COLUMN_SALE_QUANTITY );
+        Integer saleProductQuantity = values.getAsInteger(SaleEntry.COLUMN_SALE_QUANTITY);
         if (saleProductQuantity != null && saleProductQuantity < 0) {
-            throw new IllegalArgumentException( "Sale requires valid quantity" );
-        }
-
-        // Check that the supplier phone is valid
-        Integer supplierName = values.getAsInteger( SaleEntry.COLUMN_SALE_SUPPLIER_NAME );
-        if (supplierName == null || !SaleEntry.isValidSupplier( supplierName )) {
-            throw new IllegalArgumentException( "Sale requires valid supplier" );
+            throw new IllegalArgumentException("Sale requires valid quantity");
         }
 
         // Check that the supplier name is valid
-        Integer supplierPhone = values.getAsInteger( SaleEntry.COLUMN_SALE_SUPPLIER_NAME );
-        if (supplierPhone == null) {
-            throw new IllegalArgumentException( "Sale requires a supplier phone number" );
+        Integer supplierName = values.getAsInteger(SaleEntry.COLUMN_SALE_SUPPLIER_NAME);
+        if (supplierName == null || !SaleEntry.isValidSupplier(supplierName)) {
+            throw new IllegalArgumentException("Sale requires valid supplier name");
         }
 
-        // Get writeable database
+        // Check that the supplier name is valid
+        String supplierPhone = values.getAsString(SaleEntry.COLUMN_SALE_SUPPLIER_PHONE);
+        if (supplierPhone == null) {
+            throw new IllegalArgumentException("Sale requires valid supplier phone");
+        }
+
+        // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
-        // Insert the new sale with the given values
-        long id = database.insert( SaleEntry.TABLE_NAME, null, values );
+        // Insert the new pet with the given values
+        long id = database.insert(SaleEntry.TABLE_NAME, null, values);
         // If the ID is -1, then the insertion failed. Log an error and return null.
         if (id == -1) {
-            Log.e( LOG_TAG, "Failed to insert row for " + uri );
+            Log.e(LOG_TAG, "Failed to insert row for " + uri);
             return null;
         }
 
         // Notify all listeners that the data has changed for the sale content URI
         getContext().getContentResolver().notifyChange( uri, null );
 
-
-        // For accessing the previous value of the quantity on the product table
-        // Get writeable database
-        SQLiteDatabase databaseForReading = mDbHelper.getReadableDatabase();
-        //specify the columns to be fetched
-        String[] columns = {ProductEntry.COLUMN_PRODUCT_QUANTITY,};
-        //Select condition
-        String selection = ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
-        //Arguments for selection
-        String[] selectionArgs = {saleProductName};
-
-        int currentQuantityInProductTable = 0;
-
-        Cursor cursor = databaseForReading.query( ProductEntry.TABLE_NAME, columns, selection,
-                selectionArgs, null, null, null );
-        if (cursor != null) {
-            cursor.moveToFirst();
-            int indexForQuantity = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_QUANTITY );
-            currentQuantityInProductTable = cursor.getInt( indexForQuantity );
-
-        }
-
-
-        // Updating the quantity value in the Product table
-        // New value for one column
-        int newQuantity = currentQuantityInProductTable - values.getAsInteger( SaleEntry.COLUMN_SALE_QUANTITY );
-        // New value for one column
-        values.put( ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity );
-
-        // Which row to update, based on the title
-        String selectionForProductTableUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
-        String[] selectionArgsForProductTableUpdate = {saleProductName};
-
-        int rowsUpdatedForProductTableUpdate = database.update(
-                ProductEntry.TABLE_NAME,
-                values,
-                selectionForProductTableUpdate,
-                selectionArgsForProductTableUpdate );
-
-
-        // If 1 or more rows were updated, then notify all listeners that the data at the
-        // given URI has changed
-        if (rowsUpdatedForProductTableUpdate != 0) {
-            // Notify all listeners that the data has changed for the sale content URI
-            getContext().getContentResolver().notifyChange( uri, null );
-        }
-        //
-
         // Return the new URI with the ID (of the newly inserted row) appended at the end
-        return ContentUris.withAppendedId( uri, id );
+        return ContentUris.withAppendedId(uri, id);
     }
 
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete( Uri uri,  String selection,  String[] selectionArgs) {
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Track the number of rows that were deleted
         int rowsDeleted;
 
-        final int match = sUriMatcher.match( uri );
+        final int match = sUriMatcher.match(uri);
         switch (match) {
             case SALES:
                 // Delete all rows that match the selection and selection args
-                rowsDeleted = database.delete( SaleEntry.TABLE_NAME, selection, selectionArgs );
+                rowsDeleted = database.delete(SaleEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             case SALE_ID:
                 // Delete a single row given by the ID in the URI
                 selection = SaleEntry._ID + "=?";
-                selectionArgs = new String[]{String.valueOf( ContentUris.parseId( uri ) )};
-                rowsDeleted = database.delete( SaleEntry.TABLE_NAME, selection, selectionArgs );
+                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                rowsDeleted = database.delete(SaleEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
-                throw new IllegalArgumentException( "Deletion is not supported for " + uri );
+                throw new IllegalArgumentException("Deletion is not supported for " + uri);
         }
 
         // If 1 or more rows were deleted, then notify all listeners that the data at the
         // given URI has changed
         if (rowsDeleted != 0) {
-            getContext().getContentResolver().notifyChange( uri, null );
+            getContext().getContentResolver().notifyChange(uri, null);
         }
 
         // Return the number of rows deleted
@@ -283,20 +227,20 @@ public class SaleProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
-        final int match = sUriMatcher.match( uri );
+    public int update( Uri uri,  ContentValues contentValues,  String selection,  String[] selectionArgs) {
+        final int match = sUriMatcher.match(uri);
         switch (match) {
             case SALES:
-                return updateSale( uri, contentValues, selection, selectionArgs );
+                return updateSale(uri, contentValues, selection, selectionArgs);
             case SALE_ID:
                 // For the SALE_ID code, extract out the ID from the URI,
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 selection = SaleEntry._ID + "=?";
-                selectionArgs = new String[]{String.valueOf( ContentUris.parseId( uri ) )};
-                return updateSale( uri, contentValues, selection, selectionArgs );
+                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                return updateSale(uri, contentValues, selection, selectionArgs);
             default:
-                throw new IllegalArgumentException( "Update is not supported for " + uri );
+                throw new IllegalArgumentException("Update is not supported for " + uri);
         }
     }
 
@@ -306,52 +250,51 @@ public class SaleProvider extends ContentProvider {
      * Return the number of rows that were successfully updated.
      */
     private int updateSale(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-
         // If the {@link SaleEntry#COLUMN_SALE_PRODUCT_NAME} key is present,
         // check that the name value is not null.
-        if (values.containsKey( SaleEntry.COLUMN_SALE_PRODUCT_NAME )) {
-            String name = values.getAsString( SaleEntry.COLUMN_SALE_PRODUCT_NAME );
+        if (values.containsKey(SaleEntry.COLUMN_SALE_PRODUCT_NAME)) {
+            String name = values.getAsString(SaleEntry.COLUMN_SALE_PRODUCT_NAME);
             if (name == null) {
-                throw new IllegalArgumentException( "Sale requires a product name" );
+                throw new IllegalArgumentException("Sale requires a product name");
             }
         }
 
         // If the {@link SaleEntry#COLUMN_PET_GENDER} key is present,
-        // check that the gender value is valid.
-        if (values.containsKey( SaleEntry.COLUMN_SALE_PRICE )) {
-            Integer price = values.getAsInteger( SaleEntry.COLUMN_SALE_PRICE );
+        // check that the price value is valid.
+        if (values.containsKey(SaleEntry.COLUMN_SALE_PRICE)) {
+            Integer price = values.getAsInteger(SaleEntry.COLUMN_SALE_PRICE);
             if (price == null) {
-                throw new IllegalArgumentException( "Sale requires valid price" );
+                throw new IllegalArgumentException("Sale requires valid price");
             }
         }
 
         // If the {@link SaleEntry#COLUMN_SALE_QUANTITY} key is present,
-        // check that the weight value is valid.
-        if (values.containsKey( SaleEntry.COLUMN_SALE_QUANTITY )) {
+        // check that the quantity value is valid.
+        if (values.containsKey(SaleEntry.COLUMN_SALE_QUANTITY)) {
             // Check that the weight is greater than or equal to 0 kg
-            Integer quantity = values.getAsInteger( SaleEntry.COLUMN_SALE_QUANTITY );
+            Integer quantity = values.getAsInteger(SaleEntry.COLUMN_SALE_QUANTITY);
             if (quantity != null && quantity < 0) {
-                throw new IllegalArgumentException( "Sale requires valid quantity" );
+                throw new IllegalArgumentException("Sale requires valid quantity");
             }
         }
 
         // If the {@link SaleEntry#COLUMN_SALE_SUPPLIER_NAME} key is present,
-        // check that the weight value is valid.
-        if (values.containsKey( SaleEntry.COLUMN_SALE_SUPPLIER_NAME )) {
+        // check that the supplier name value is valid.
+        if (values.containsKey(SaleEntry.COLUMN_SALE_SUPPLIER_NAME)) {
             // Check that the weight is greater than or equal to 0 kg
-            Integer supplier = values.getAsInteger( SaleEntry.COLUMN_SALE_SUPPLIER_NAME );
-            if (supplier == null || !SaleEntry.isValidSupplier( supplier )) {
-                throw new IllegalArgumentException( "Sale requires valid supplier" );
+            Integer supplierName = values.getAsInteger(SaleEntry.COLUMN_SALE_SUPPLIER_NAME);
+            if (supplierName == null || !SaleEntry.isValidSupplier(supplierName)) {
+                throw new IllegalArgumentException("Sale requires valid supplier name");
             }
         }
 
-        // If the {@link SaleEntry#COLUMN_SALE_SUPPLIER_NAME} key is present,
-        // check that the weight value is valid.
-        if (values.containsKey( SaleEntry.COLUMN_SUPPLIER_PHONE )) {
+        // If the {@link SaleEntry#COLUMN_SALE_SUPPLIER_PHONE} key is present,
+        // check that the supplier phone value is valid.
+        if (values.containsKey(SaleEntry.COLUMN_SALE_SUPPLIER_PHONE)) {
             // Check that the weight is greater than or equal to 0 kg
-            String supplierPhone = values.getAsString( SaleEntry.COLUMN_SUPPLIER_PHONE );
-            if (supplierPhone == null) {
-                throw new IllegalArgumentException( "Sale requires a supplier phone number" );
+            String supplierPhone = values.getAsString(SaleEntry.COLUMN_SALE_SUPPLIER_PHONE);
+            if (supplierPhone == null ) {
+                throw new IllegalArgumentException("Sale requires valid supplier phone");
             }
         }
 
@@ -360,101 +303,24 @@ public class SaleProvider extends ContentProvider {
             return 0;
         }
 
-
-        // Otherwise, get writeable database to update the data
+        // Otherwise, get writable database to update the data
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
-        // Perform the update on the database and get the number of rows affected
-        int rowsUpdated = database.update( SaleEntry.TABLE_NAME, values, selection, selectionArgs );
+        int rowsUpdated = database.update(
+                SaleEntry.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
 
         // If 1 or more rows were updated, then notify all listeners that the data at the
         // given URI has changed
         if (rowsUpdated != 0) {
-            getContext().getContentResolver().notifyChange( uri, null );
-        }
-
-
-        // For accessing the previous value of the quantity on the product table
-        // Get readable database
-        SQLiteDatabase databaseForReading = mDbHelper.getReadableDatabase();
-        //specify the columns to be fetched
-        String[] columns = {ProductEntry.COLUMN_PRODUCT_QUANTITY,};
-        //Select condition
-        String selectionInUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
-        //Arguments for selection
-        String saleProductName = values.getAsString( SaleEntry.COLUMN_SALE_PRODUCT_NAME );
-        String[] selectionArgsInUpdate = {saleProductName};
-
-        int currentQuantityInProductTable = 0;
-
-        Cursor cursor = databaseForReading.query( ProductEntry.TABLE_NAME, columns, selectionInUpdate,
-                selectionArgsInUpdate, null, null, null );
-        if (cursor != null) {
-            cursor.moveToFirst();
-            int indexForQuantity = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_QUANTITY );
-            currentQuantityInProductTable = cursor.getInt( indexForQuantity );
-
-        }
-
-        // get current quantity information from the sales table
-        //specify the columns to be fetched
-        String[] columnsNew = {SaleEntry.COLUMN_SALE_QUANTITY,};
-        //Select condition
-        String selectionInUpdateNew = SaleEntry.COLUMN_SALE_PRODUCT_NAME + " = ?";
-        //Arguments for selection
-        String saleProductNameNew = values.getAsString( SaleEntry.COLUMN_SALE_PRODUCT_NAME );
-        String[] selectionArgsInUpdateNew = {saleProductNameNew};
-
-        int currentQuantityInSaleTable = 0;
-
-        Cursor cursorNew = databaseForReading.query( ProductEntry.TABLE_NAME, columnsNew, selectionInUpdateNew,
-                selectionArgsInUpdateNew, null, null, null );
-        if (cursor != null) {
-            cursor.moveToFirst();
-            int indexForQuantity = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_QUANTITY );
-            currentQuantityInSaleTable = cursor.getInt( indexForQuantity );
-
-        }
-
-        // Updating the quantity value in the Product table
-        // New value for one column
-
-        int newQuantity = 0;
-
-        int newQuantityInSaleEditText = values.getAsInteger( SaleEntry.COLUMN_SALE_QUANTITY );
-        if (newQuantityInSaleEditText > currentQuantityInSaleTable) {
-            newQuantity = currentQuantityInProductTable - Math.abs( newQuantityInSaleEditText - currentQuantityInSaleTable );
-        } else {
-            newQuantity = currentQuantityInProductTable + Math.abs( newQuantityInSaleEditText - currentQuantityInSaleTable );
-        }
-
-        ContentValues values1 = new ContentValues();
-        // New value for one column
-        values1.put( ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity );
-
-        // Which row to update, based on the title
-        String selectionForProductTableUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
-        String[] selectionArgsForProductTableUpdate = {saleProductName};
-
-        int rowsUpdatedForProductTableUpdate = database.update(
-                ProductEntry.TABLE_NAME,
-                values1,
-                selectionForProductTableUpdate,
-                selectionArgsForProductTableUpdate );
-
-
-        // If 1 or more rows were updated, then notify all listeners that the data at the
-        // given URI has changed
-        if (rowsUpdatedForProductTableUpdate != 0) {
             // Notify all listeners that the data has changed for the sale content URI
             getContext().getContentResolver().notifyChange( uri, null );
         }
-        //
-
 
         // Return the number of rows updated
         return rowsUpdated;
-
     }
 
 }
