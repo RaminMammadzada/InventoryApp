@@ -173,7 +173,7 @@ public class SaleProvider extends ContentProvider {
             throw new IllegalArgumentException("Sale requires valid supplier phone");
         }
 
-        // Get writeable database
+        // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Insert the new pet with the given values
@@ -186,56 +186,6 @@ public class SaleProvider extends ContentProvider {
 
         // Notify all listeners that the data has changed for the sale content URI
         getContext().getContentResolver().notifyChange( uri, null );
-
-
-
-        // For accessing the previous value of the quantity on the product table
-        // Get writeable database
-        SQLiteDatabase databaseForReading = mDbHelper.getReadableDatabase();
-        //specify the columns to be fetched
-        String[] columns = {ProductEntry.COLUMN_PRODUCT_QUANTITY,};
-        //Select condition
-        String selection = ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
-        //Arguments for selection
-        String[] selectionArgs = {saleProductName};
-
-        int currentQuantityInProductTable = 0;
-
-        Cursor cursor = databaseForReading.query(ProductEntry.TABLE_NAME, columns, selection,
-                selectionArgs, null, null, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
-            int indexForQuantity = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_QUANTITY );
-            currentQuantityInProductTable  = cursor.getInt( indexForQuantity );
-
-        }
-
-
-        // Updating the quantity value in the Product table
-        // New value for one column
-        int newQuantity = currentQuantityInProductTable - values.getAsInteger(SaleEntry.COLUMN_SALE_QUANTITY);
-        // New value for one column
-        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity);
-
-        // Which row to update, based on the title
-        String selectionForProductTableUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
-        String[] selectionArgsForProductTableUpdate = { saleProductName};
-
-        int rowsUpdatedForProductTableUpdate = database.update(
-                ProductEntry.TABLE_NAME,
-                values,
-                selectionForProductTableUpdate,
-                selectionArgsForProductTableUpdate);
-
-
-
-        // If 1 or more rows were updated, then notify all listeners that the data at the
-        // given URI has changed
-        if (rowsUpdatedForProductTableUpdate != 0) {
-            // Notify all listeners that the data has changed for the sale content URI
-            getContext().getContentResolver().notifyChange( uri, null );
-        }
-        //
 
         // Return the new URI with the ID (of the newly inserted row) appended at the end
         return ContentUris.withAppendedId(uri, id);
@@ -353,85 +303,14 @@ public class SaleProvider extends ContentProvider {
             return 0;
         }
 
-
-        // Perform the update on the database and get the number of rows affected
-        int rowsUpdated = 0;
-
-        // For accessing the previous value of the quantity on the product table
-        // Get readable database
-        SQLiteDatabase databaseForReading = mDbHelper.getReadableDatabase();
-        //specify the columns to be fetched
-        String[] columns = {ProductEntry.COLUMN_PRODUCT_QUANTITY,};
-        //Select condition
-        String selectionInUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
-        //Arguments for selection
-        String saleProductName = values.getAsString(SaleEntry.COLUMN_SALE_PRODUCT_NAME);
-        String[] selectionArgsInUpdate = {saleProductName};
-
-        int currentQuantityInProductTable = 0;
-        int currentQuantityInSaleTable = 0;
-        int newQuantity = 0;
-
-        Cursor cursorNewPoductTable = databaseForReading.query(ProductEntry.TABLE_NAME, columns, selectionInUpdate,
-                selectionArgsInUpdate, null, null, null);
-
-        if(cursorNewPoductTable == null) {
-            // Otherwise, get writeable database to update the data
+            // Otherwise, get writable database to update the data
             SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
-            // Perform the update on the database and get the number of rows affected
-            rowsUpdated = database.update(SaleEntry.TABLE_NAME, values, selection, selectionArgs);
-
-            // If 1 or more rows were updated, then notify all listeners that the data at the
-            // given URI has changed
-            if (rowsUpdated != 0) {
-                getContext().getContentResolver().notifyChange(uri, null);
-            }
-        } else {
-
-            // for current quantity in product table
-            cursorNewPoductTable.moveToFirst();
-            int indexForQuantityProductTable = cursorNewPoductTable.getColumnIndex( ProductEntry.COLUMN_PRODUCT_QUANTITY );
-            currentQuantityInProductTable = cursorNewPoductTable.getInt( indexForQuantityProductTable );
-
-
-            // get current quantity from the sales table
-            //specify the columns to be fetched
-            String[] columnsNew = {SaleEntry.COLUMN_SALE_QUANTITY,};
-            //Select condition
-            String selectionInUpdateNew = SaleEntry.COLUMN_SALE_PRODUCT_NAME + " = ?";
-            //Arguments for selection
-            String saleProductNameNew = values.getAsString(SaleEntry.COLUMN_SALE_PRODUCT_NAME);
-            String[] selectionArgsInUpdateNew = {saleProductNameNew};
-
-            Cursor cursorNewSaleTable = databaseForReading.query(SaleEntry.TABLE_NAME, columnsNew, selectionInUpdateNew,
-                    selectionArgsInUpdateNew, null, null, null);
-
-            if (cursorNewSaleTable != null) {
-
-                cursorNewSaleTable.moveToFirst();
-                int indexForQuantitySaleTable = cursorNewSaleTable.getColumnIndex( SaleEntry.COLUMN_SALE_QUANTITY );
-                currentQuantityInSaleTable = cursorNewSaleTable.getInt( indexForQuantitySaleTable );
-            }
-
-            // Updating the quantity value in the Product table
-            // New value for one column
-            newQuantity = currentQuantityInProductTable - Math.abs(values.getAsInteger(SaleEntry.COLUMN_SALE_QUANTITY) - currentQuantityInSaleTable);
-            // New value for one column
-            values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity);
-
-            // Which row to update, based on the title
-            String selectionForProductTableUpdate = ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
-            String[] selectionArgsForProductTableUpdate = { saleProductName};
-
-            // Otherwise, get writeable database to update the data
-            SQLiteDatabase database = mDbHelper.getWritableDatabase();
-
-            rowsUpdated = database.update(
-                    ProductEntry.TABLE_NAME,
+            int rowsUpdated = database.update(
+                    SaleEntry.TABLE_NAME,
                     values,
-                    selectionForProductTableUpdate,
-                    selectionArgsForProductTableUpdate);
+                    selection,
+                    selectionArgs);
 
             // If 1 or more rows were updated, then notify all listeners that the data at the
             // given URI has changed
@@ -439,7 +318,6 @@ public class SaleProvider extends ContentProvider {
                 // Notify all listeners that the data has changed for the sale content URI
                 getContext().getContentResolver().notifyChange( uri, null );
             }
-        }
 
         // Return the number of rows updated
         return rowsUpdated;

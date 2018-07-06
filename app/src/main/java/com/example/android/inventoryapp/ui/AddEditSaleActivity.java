@@ -1,6 +1,7 @@
 package com.example.android.inventoryapp.ui;
 
 import android.app.AlertDialog;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -112,24 +113,25 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         }
 
 
-        // If the intent DOES NOT contain a pet content URI, then we know that we are
-        // creating a new pet.
+        // If the intent DOES NOT contain a product content URI, then we know that we are
+        // creating a new product.
         if (mCurrentSaleUri == null) {
-            // This is a new pet, so change the app bar to say "Add a Sale"
+            // This is a new sale from the sales listview, so change the app bar to say "Add a Sale"
             setTitle(getString(R.string.editor_activity_title_new_sale));
 
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
-            // (It doesn't make sense to delete a pet that hasn't been created yet.)
+            // (It doesn't make sense to delete a product that hasn't been created yet.)
             invalidateOptionsMenu();
         } else if (mCurrentSaleUri != null && lastActivity=="ProductsActivity") {
+            // Otherwise this is a new sale from the Products listview, so change app bar to say "New Sale"
             setTitle(getString(R.string.editor_activity_title_new_sale));
 
             // Initialize a loader to read the product data from the database
-            // and display the current values in the editor
+            // and display the current values in the editor, except quantity
             getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
         }
         else {
-            // Otherwise this is an existing pet, so change app bar to say "Edit Sale"
+            // Otherwise this is an existing product, so change app bar to say "Edit Sale"
             setTitle(getString(R.string.editor_activity_title_edit_sale));
 
             // Initialize a loader to read the product data from the database
@@ -260,6 +262,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
 
         if(isThereMissingField) return false;
 
+
         // Create a ContentValues object where column names are the keys,
         // and pet attributes from the editor are the values.
         ContentValues values = new ContentValues();
@@ -311,6 +314,8 @@ public class AddEditSaleActivity extends AppCompatActivity implements
 
             } else {
                 rowsAffected = getContentResolver().update( mCurrentSaleUri, values, null, null );
+                /*Uri currentProductUri = ContentUris.withAppendedId( SaleEntry.CONTENT_URI, id);
+                getContentResolver().update( currentProductUri, null, null );*/
             }
 
             // Show a toast message depending on whether or not the update was successful.
