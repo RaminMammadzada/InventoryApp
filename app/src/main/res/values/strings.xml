@@ -109,5 +109,6 @@
     <string name="price_text_view">Price:</string>
     <string name="quantity_text_view">Quantity:</string>
     <string name="sale_button_text">SALE</string>
+    <string name="order_button_text">ORDER</string>
 
 </resources>

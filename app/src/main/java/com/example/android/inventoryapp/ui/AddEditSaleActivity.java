@@ -33,13 +33,17 @@ import com.example.android.inventoryapp.data.SaleContract.SaleEntry;
 /**
  * Allows user to create a new sale or edit an existing one.
  */
-public class AddEditSaleActivity extends AppCompatActivity implements 
-        LoaderManager.LoaderCallbacks<Cursor>{
+public class AddEditSaleActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** Identifier for the pet data loader */
+    /**
+     * Identifier for the pet data loader
+     */
     private static final int EXISTING_PRODUCT_LOADER = 0;
 
-    /** Content URI for the existing pet (null if it's a new pet) */
+    /**
+     * Content URI for the existing pet (null if it's a new pet)
+     */
     private Uri mCurrentSaleUri;
 
     /**
@@ -68,7 +72,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
      * The only possible values are {KAMUEL}, {WALKAIR},
      * {NIKE}, {FOREX}, {FORSCLASS},
      * or {DEPEDRO}.
-     *
+     * <p>
      * Type: TEXT
      */
     public int mSupplierName = SaleEntry.UNKNOWN;
@@ -79,10 +83,14 @@ public class AddEditSaleActivity extends AppCompatActivity implements
     private EditText mSupplierPhoneEditText;
 
 
-    /** Boolean flag that keeps track of whether the sale has been edited (true) or not (false) */
+    /**
+     * Boolean flag that keeps track of whether the sale has been edited (true) or not (false)
+     */
     private boolean mSaleHasChanged = false;
 
-    /** It stores the name of the last Activity run before this activity */
+    /**
+     * It stores the name of the last Activity run before this activity
+     */
     String lastActivity = "";
 
     /**
@@ -107,7 +115,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         mCurrentSaleUri = intent.getData();
 
-        String caller = getIntent().getStringExtra("caller");
+        String caller = getIntent().getStringExtra( "caller" );
         try {
             lastActivity = "ProductsActivity";
         } catch (NullPointerException e) {
@@ -119,31 +127,30 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         // creating a new product.
         if (mCurrentSaleUri == null) {
             // This is a new sale from the sales listview, so change the app bar to say "Add a Sale"
-            setTitle(getString(R.string.editor_activity_title_new_sale));
+            setTitle( getString( R.string.editor_activity_title_new_sale ) );
 
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete a product that hasn't been created yet.)
             invalidateOptionsMenu();
-        } else if (mCurrentSaleUri != null && lastActivity=="ProductsActivity") {
+        } else if (mCurrentSaleUri != null && lastActivity == "ProductsActivity") {
             // Otherwise this is a new sale from the Products listview, so change app bar to say "New Sale"
-            setTitle(getString(R.string.editor_activity_title_new_sale));
+            setTitle( getString( R.string.editor_activity_title_new_sale ) );
 
             // Initialize a loader to read the product data from the database
             // and display the current values in the editor, except quantity
-            getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
-        }
-        else {
+            getLoaderManager().initLoader( EXISTING_PRODUCT_LOADER, null, this );
+        } else {
             // Otherwise this is an existing product, so change app bar to say "Edit Sale"
-            setTitle(getString(R.string.editor_activity_title_edit_sale));
+            setTitle( getString( R.string.editor_activity_title_edit_sale ) );
 
             // Initialize a loader to read the product data from the database
             // and display the current values in the editor
-            getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
+            getLoaderManager().initLoader( EXISTING_PRODUCT_LOADER, null, this );
         }
 
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById( R.id.add_name );
-        mPriceEditText = (EditText) findViewById( R.id.add_price);
+        mPriceEditText = (EditText) findViewById( R.id.add_price );
         mQuantityTextView = (TextView) findViewById( R.id.add_quantity );
         mSupplierNameSpinner = (Spinner) findViewById( R.id.spinner_supplier );
         mSupplierPhoneEditText = (EditText) findViewById( R.id.add_supplier_phone );
@@ -151,10 +158,10 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
         // or not, if the user tries to leave the editor without saving.
-        mNameEditText.setOnTouchListener(mTouchListener);
-        mPriceEditText.setOnTouchListener(mTouchListener);
+        mNameEditText.setOnTouchListener( mTouchListener );
+        mPriceEditText.setOnTouchListener( mTouchListener );
         // mQuantityTextView is defined by increaseQuantity and decreaseQuantity functions
-        mSupplierNameSpinner.setOnTouchListener(mTouchListener);
+        mSupplierNameSpinner.setOnTouchListener( mTouchListener );
         setupSpinner();
 
         mSupplierPhoneEditText.setOnTouchListener( mTouchListener );
@@ -163,16 +170,18 @@ public class AddEditSaleActivity extends AppCompatActivity implements
 
     public void increaseInteger(View view) {
         mQuantity = mQuantity + 1;
-        if(mQuantity<=1000){
-            displayQuantity(mQuantity);
+        if (mQuantity <= 1000) {
+            displayQuantity( mQuantity );
         } else {
             mQuantity = mQuantity - 1;
         }
 
-    }public void decreaseInteger(View view) {
+    }
+
+    public void decreaseInteger(View view) {
         mQuantity = mQuantity - 1;
-        if(mQuantity>=0){
-            displayQuantity(mQuantity);
+        if (mQuantity >= 0) {
+            displayQuantity( mQuantity );
         } else {
             mQuantity = mQuantity + 1;
         }
@@ -180,8 +189,8 @@ public class AddEditSaleActivity extends AppCompatActivity implements
 
     private void displayQuantity(int quantity) {
         TextView displayQuantityInteger = (TextView) findViewById(
-                R.id.add_quantity);
-        displayQuantityInteger.setText("" + quantity);
+                R.id.add_quantity );
+        displayQuantityInteger.setText( "" + quantity );
     }
 
     /**
@@ -206,17 +215,17 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                 String selection = (String) parent.getItemAtPosition( position );
 
                 if (!TextUtils.isEmpty( selection )) {
-                    if (selection.equals( "UNKNOWN" )){
+                    if (selection.equals( "UNKNOWN" )) {
                         mSupplierName = SaleEntry.UNKNOWN;
                     } else if (selection.equals( getString( R.string.supplier_KAMUEL ) )) {
                         mSupplierName = SaleEntry.KAMUEL;
                     } else if (selection.equals( getString( R.string.supplier_DEPEDRO ) )) {
                         mSupplierName = SaleEntry.DEPEDRO;
-                    } else if(selection.equals( getString( R.string.supplier_FOREX ) )){
+                    } else if (selection.equals( getString( R.string.supplier_FOREX ) )) {
                         mSupplierName = SaleEntry.FOREX;
                     } else if (selection.equals( getString( R.string.supplier_FORSCLASS ) )) {
                         mSupplierName = SaleEntry.FORSCLASS;
-                    } else if(selection.equals( getString( R.string.supplier_NIKE ) )){
+                    } else if (selection.equals( getString( R.string.supplier_NIKE ) )) {
                         mSupplierName = SaleEntry.NIKE;
                     } else if (selection.equals( getString( R.string.supplier_WALKAIR ) )) {
                         mSupplierName = SaleEntry.WALKAIR;
@@ -247,8 +256,8 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank
         if (mCurrentSaleUri == null &&
-                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(quantityString) && mSupplierName == SaleEntry.UNKNOWN) {
+                TextUtils.isEmpty( nameString ) && TextUtils.isEmpty( priceString ) &&
+                TextUtils.isEmpty( quantityString ) && mSupplierName == SaleEntry.UNKNOWN) {
             // Since no fields were modified, we can return early without creating a new sale.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return false;
@@ -257,12 +266,21 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         // These lines check weather all of the field filled or not. If not, it prompts the error messages.
         Boolean isThereMissingField = false;
         // checking if there any blank editText or not
-        if(TextUtils.isEmpty(mNameEditText.getText()) ){ mNameEditText.setError( "Name is required!" ); isThereMissingField = true;}
-        else if (TextUtils.isEmpty(mPriceEditText.getText())) { mPriceEditText.setError( "Price is required!" ); isThereMissingField = true;}
-        else if (TextUtils.isEmpty(mQuantityTextView.getText())) { mQuantityTextView.setError( "Quantity is required!" ); isThereMissingField = true;}
-        else if (TextUtils.isEmpty(mSupplierPhoneEditText.getText())) { mSupplierPhoneEditText.setError( "Supplier phone is required!" ); isThereMissingField = true;}
+        if (TextUtils.isEmpty( mNameEditText.getText() )) {
+            mNameEditText.setError( "Name is required!" );
+            isThereMissingField = true;
+        } else if (TextUtils.isEmpty( mPriceEditText.getText() )) {
+            mPriceEditText.setError( "Price is required!" );
+            isThereMissingField = true;
+        } else if (TextUtils.isEmpty( mQuantityTextView.getText() )) {
+            mQuantityTextView.setError( "Quantity is required!" );
+            isThereMissingField = true;
+        } else if (TextUtils.isEmpty( mSupplierPhoneEditText.getText() )) {
+            mSupplierPhoneEditText.setError( "Supplier phone is required!" );
+            isThereMissingField = true;
+        }
 
-        if(isThereMissingField) return false;
+        if (isThereMissingField) return false;
 
 
         // Create a ContentValues object where column names are the keys,
@@ -278,17 +296,17 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         if (mCurrentSaleUri == null) {
             // This is a NEW pet, so insert a new pet into the provider,
             // returning the content URI for the new pet.
-            Uri newUri = getContentResolver().insert(SaleEntry.CONTENT_URI, values);
+            Uri newUri = getContentResolver().insert( SaleEntry.CONTENT_URI, values );
 
             // Show a toast message depending on whether or not the insertion was successful.
             if (newUri == null) {
                 // If the new content URI is null, then there was an error with insertion.
-                Toast.makeText(this, getString(R.string.editor_insert_sale_failed),
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText( this, getString( R.string.editor_insert_sale_failed ),
+                        Toast.LENGTH_SHORT ).show();
             } else {
                 // Otherwise, the insertion was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_insert_sale_successful),
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText( this, getString( R.string.editor_insert_sale_successful ),
+                        Toast.LENGTH_SHORT ).show();
             }
         } else {
             // Otherwise this is an EXISTING product, so update the sale with content URI: mCurrentSaleUri
@@ -296,19 +314,19 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             // because mCurrentSaleUri will already identify the correct row in the database that
             // we want to modify.
             int rowsAffected = 0;
-            if(lastActivity == "ProductsActivity"){
-                Uri newUri = getContentResolver().insert(SaleEntry.CONTENT_URI, values);
-                getBaseContext().getContentResolver().notifyChange(newUri, null);
+            if (lastActivity == "ProductsActivity") {
+                Uri newUri = getContentResolver().insert( SaleEntry.CONTENT_URI, values );
+                getBaseContext().getContentResolver().notifyChange( newUri, null );
 
                 // Show a toast message depending on whether or not the insertion was successful.
                 if (newUri == null) {
                     // If the new content URI is null, then there was an error with insertion.
-                    Toast.makeText(this, getString(R.string.editor_insert_sale_failed),
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText( this, getString( R.string.editor_insert_sale_failed ),
+                            Toast.LENGTH_SHORT ).show();
                 } else {
                     // Otherwise, the insertion was successful and we can display a toast.
-                    Toast.makeText(this, getString(R.string.editor_insert_sale_successful),
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText( this, getString( R.string.editor_insert_sale_successful ),
+                            Toast.LENGTH_SHORT ).show();
                 }
 
                 // calculating the new quantity of the product in products table after sale
@@ -321,7 +339,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                 //Select condition
                 String selection = ProductContract.ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
                 //Arguments for selection
-                String saleProductName = values.getAsString( ProductContract.ProductEntry.COLUMN_PRODUCT_NAME);
+                String saleProductName = values.getAsString( ProductContract.ProductEntry.COLUMN_PRODUCT_NAME );
                 String[] selectionArgs = {saleProductName};
                 Cursor cursorPoductInTable = getContentResolver().query( mCurrentSaleUri, projection, selection, selectionArgs, null );
                 // for current quantity in product table
@@ -329,11 +347,18 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                 int indexForQuantityInProductTable = cursorPoductInTable.getColumnIndex( ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY );
                 int quantityInProductTable = cursorPoductInTable.getInt( indexForQuantityInProductTable );
 
+                if (currentlySoldQuantity > 0) {
+                    if (currentlySoldQuantity > quantityInProductTable) {
+                        mQuantityTextView.setError( "You cannot sell more than!" + quantityString );
+                        return false;
+                    }
+                } else {return false;}
+
                 newQuantity = quantityInProductTable - currentlySoldQuantity;
 
                 values.put( SaleEntry.COLUMN_SALE_QUANTITY, newQuantity );
 
-                rowsAffected = getContentResolver().update( mCurrentSaleUri, values,null, null );
+                rowsAffected = getContentResolver().update( mCurrentSaleUri, values, null, null );
 
 
             } else {
@@ -345,12 +370,12 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
                 // If no rows were affected, then there was an error with the update.
-                Toast.makeText(this, getString(R.string.editor_update_sale_failed),
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText( this, getString( R.string.editor_update_sale_failed ),
+                        Toast.LENGTH_SHORT ).show();
             } else {
                 // Otherwise, the update was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_update_sale_successful),
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText( this, getString( R.string.editor_update_sale_successful ),
+                        Toast.LENGTH_SHORT ).show();
             }
         }
         return true;
@@ -370,11 +395,11 @@ public class AddEditSaleActivity extends AppCompatActivity implements
      */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
+        super.onPrepareOptionsMenu( menu );
         // If this is a new sale, hide the "Delete" menu item.
         if (mCurrentSaleUri == null) {
-            MenuItem menuItem = menu.findItem(R.id.action_delete);
-            menuItem.setVisible(false);
+            MenuItem menuItem = menu.findItem( R.id.action_delete );
+            menuItem.setVisible( false );
         }
         return true;
     }
@@ -402,7 +427,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             case android.R.id.home:
                 // If the pet hasn't changed, continue with navigating up to parent activity
                 // which is the {@link CatalogActivity}.
-                if(mSaleHasChanged) {
+                if (mSaleHasChanged) {
                     NavUtils.navigateUpFromSameTask( AddEditSaleActivity.this );
                     return true;
                 }
@@ -415,12 +440,12 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // User clicked "Discard" button, navigate to parent activity.
-                                NavUtils.navigateUpFromSameTask(AddEditSaleActivity.this);
+                                NavUtils.navigateUpFromSameTask( AddEditSaleActivity.this );
                             }
                         };
 
                 // Show a dialog that notifies the user they have unsaved changes
-                showUnsavedChangesDialog(discardButtonClickListener);
+                showUnsavedChangesDialog( discardButtonClickListener );
                 return true;
         }
         return super.onOptionsItemSelected( item );
@@ -449,7 +474,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                 };
 
         // Show dialog that there are unsaved changes
-        showUnsavedChangesDialog(discardButtonClickListener);
+        showUnsavedChangesDialog( discardButtonClickListener );
     }
 
     @Override
@@ -465,12 +490,12 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                 SaleEntry.COLUMN_SALE_SUPPLIER_PHONE};
 
         // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(this,   // Parent activity context
+        return new CursorLoader( this,   // Parent activity context
                 mCurrentSaleUri,         // Query the content URI for the current pet
                 projection,             // Columns to include in the resulting Cursor
                 null,                   // No selection clause
                 null,                   // No selection arguments
-                null);                  // Default sort order
+                null );                  // Default sort order
     }
 
     @Override
@@ -484,21 +509,21 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
             // Find the columns of pet attributes that we're interested in
-            int nameColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_SALE_PRODUCT_NAME);
-            int priceColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_SALE_PRICE);
-            int supplierNameColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_SALE_SUPPLIER_NAME);
-            int supplierPhoneColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_SALE_SUPPLIER_PHONE);
+            int nameColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_PRODUCT_NAME );
+            int priceColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_PRICE );
+            int supplierNameColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_SUPPLIER_NAME );
+            int supplierPhoneColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_SUPPLIER_PHONE );
 
 
             // Extract out the value from the Cursor for the given column index
-            String name = cursor.getString(nameColumnIndex);
-            int price = cursor.getInt(priceColumnIndex);
-            int supplierName = cursor.getInt(supplierNameColumnIndex);
-            String supplierPhone = cursor.getString(supplierPhoneColumnIndex);
+            String name = cursor.getString( nameColumnIndex );
+            int price = cursor.getInt( priceColumnIndex );
+            int supplierName = cursor.getInt( supplierNameColumnIndex );
+            String supplierPhone = cursor.getString( supplierPhoneColumnIndex );
 
             // Update the views on the screen with the values from the database
-            mNameEditText.setText(name);
-            mPriceEditText.setText(Integer.toString( price ));
+            mNameEditText.setText( name );
+            mPriceEditText.setText( Integer.toString( price ) );
 
             // Supplier is a dropdown spinner, so map the constant value from the database
             // into one of the dropdown options (0 is Unknown, 1 KAMUEL, 2 is WALKAIR, 3 is DEPEDRO and so on).
@@ -528,14 +553,14 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             }
 
 
-            mSupplierPhoneEditText.setText(supplierPhone);
+            mSupplierPhoneEditText.setText( supplierPhone );
 
             // We are checking that is the last activity before this ProductsActivity or SalesActivity
             if (lastActivity != "ProductsActivity") {
                 // in this case, we came from SalesActivity so, every edittext field must be filled, including quantity !
-                int quantityColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_SALE_QUANTITY);
-                int quantity = cursor.getInt(quantityColumnIndex);
-                mQuantityTextView.setText(Integer.toString( quantity ));
+                int quantityColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_QUANTITY );
+                int quantity = cursor.getInt( quantityColumnIndex );
+                mQuantityTextView.setText( Integer.toString( quantity ) );
             }
             // in this case, we came from ProductsActivity so, every edittext field must be filled also, except quantity !
             // I didn't need ELSE here, because I don't need to take the quantity index of the product,
@@ -547,9 +572,9 @@ public class AddEditSaleActivity extends AppCompatActivity implements
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         // If the loader is invalidated, clear out all the data from the input fields.
-        mNameEditText.setText("");
-        mPriceEditText.setText("");
-        mQuantityTextView.setText("");
+        mNameEditText.setText( "" );
+        mPriceEditText.setText( "" );
+        mQuantityTextView.setText( "" );
         mSupplierNameSpinner.setSelection( 0 ); // Select 'UNKNOWN' supplier
         mSupplierPhoneEditText.setText( "" );
 
@@ -566,10 +591,10 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             DialogInterface.OnClickListener discardButtonClickListener) {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the postivie and negative buttons on the dialog.
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.unsaved_changes_dialog_msg);
-        builder.setPositiveButton(R.string.discard, discardButtonClickListener);
-        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
+        AlertDialog.Builder builder = new AlertDialog.Builder( this );
+        builder.setMessage( R.string.unsaved_changes_dialog_msg );
+        builder.setPositiveButton( R.string.discard, discardButtonClickListener );
+        builder.setNegativeButton( R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Keep editing" button, so dismiss the dialog
                 // and continue editing the pet.
@@ -577,7 +602,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                     dialog.dismiss();
                 }
             }
-        });
+        } );
 
         // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
@@ -590,15 +615,15 @@ public class AddEditSaleActivity extends AppCompatActivity implements
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the postivie and negative buttons on the dialog.
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.delete_dialog_msg_sale);
-        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+        AlertDialog.Builder builder = new AlertDialog.Builder( this );
+        builder.setMessage( R.string.delete_dialog_msg_sale );
+        builder.setPositiveButton( R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the pet.
                 deleteSale();
             }
-        });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+        } );
+        builder.setNegativeButton( R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Cancel" button, so dismiss the dialog
                 // and continue editing the pet.
@@ -606,7 +631,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                     dialog.dismiss();
                 }
             }
-        });
+        } );
 
         // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
@@ -622,17 +647,17 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             // Call the ContentResolver to delete the pet at the given content URI.
             // Pass in null for the selection and selection args because the mCurrentSaleUri
             // content URI already identifies the pet that we want.
-            int rowsDeleted = getContentResolver().delete(mCurrentSaleUri, null, null);
+            int rowsDeleted = getContentResolver().delete( mCurrentSaleUri, null, null );
 
             // Show a toast message depending on whether or not the delete was successful.
             if (rowsDeleted == 0) {
                 // If no rows were deleted, then there was an error with the delete.
-                Toast.makeText(this, getString(R.string.editor_delete_sale_failed),
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText( this, getString( R.string.editor_delete_sale_failed ),
+                        Toast.LENGTH_SHORT ).show();
             } else {
                 // Otherwise, the delete was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_delete_sale_successful),
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText( this, getString( R.string.editor_delete_sale_successful ),
+                        Toast.LENGTH_SHORT ).show();
             }
         }
 

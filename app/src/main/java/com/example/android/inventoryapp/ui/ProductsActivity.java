@@ -76,7 +76,7 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
         mCursorAdapter.setListener( new ProductCursorAdapter.OnProductInteractionListener() {
             @Override
             public void onItemClick(long id) {
-                Toast.makeText( ProductsActivity.this, "Itema tikladin", Toast.LENGTH_SHORT ).show();
+                Toast.makeText( ProductsActivity.this, "You pressed to item", Toast.LENGTH_SHORT ).show();
 
                 Intent intent = new Intent(ProductsActivity.this, AddEditProductActivity.class);
 
@@ -96,7 +96,7 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
 
             @Override
             public void onSaleButtonClick(long id) {
-                Toast.makeText( ProductsActivity.this, "Sale buttona tikladin", Toast.LENGTH_SHORT ).show();
+                Toast.makeText( ProductsActivity.this, "You pressed SALE button.", Toast.LENGTH_SHORT ).show();
 
                 Intent intent = new Intent(ProductsActivity.this, AddEditSaleActivity.class);
 
@@ -115,6 +115,31 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
                 intent.putExtra("caller", "ProductsActivity");
 
                 // Launch the {@link EditorActivity} to display the data for the current product.
+                startActivity(intent);
+
+            }
+
+            @Override
+            public void onOrderButtonClick(long id) {
+                Toast.makeText( ProductsActivity.this, "You pressed ORDER button.", Toast.LENGTH_SHORT ).show();
+
+                // Form the content URI that represents the specific product that was clicked on,
+                // by appending the "id" (passed as input to this method) onto the
+                // {@link ProductEntry#CONTENT_URI}.
+                // For example, the URI would be "content://com.example.android.inventoryapp/prodcuts/2"
+                // if the product with ID 2 was clicked on.
+                Uri currentProductUri = ContentUris.withAppendedId( ProductEntry.CONTENT_URI, id);
+
+                //specify the columns to be fetched
+                String[] projection = {ProductEntry.COLUMN_SUPPLIER_PHONE,};
+                Cursor cursorPoductInTable = getContentResolver().query( currentProductUri, projection, null, null, null );
+                // for current quantity in product table
+                cursorPoductInTable.moveToFirst();
+                int indexForSupplierPhoneInProductTable = cursorPoductInTable.getColumnIndex( ProductEntry.COLUMN_SUPPLIER_PHONE );
+                String supplierPhoneInProductTable = cursorPoductInTable.getString( indexForSupplierPhoneInProductTable );
+
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + supplierPhoneInProductTable));
                 startActivity(intent);
 
             }

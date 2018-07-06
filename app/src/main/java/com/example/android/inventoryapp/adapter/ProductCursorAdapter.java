@@ -107,6 +107,14 @@ public class ProductCursorAdapter extends CursorAdapter {
             }
         } );
 
+        Button orderButton = view.findViewById( R.id.order_button );
+        orderButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getListener().onOrderButtonClick( id );
+            }
+        } );
+
     }
 
     public interface OnProductInteractionListener {
@@ -114,5 +122,6 @@ public class ProductCursorAdapter extends CursorAdapter {
 
         void onSaleButtonClick(long id);
 
+        void onOrderButtonClick(long id);
     }
 }

@@ -51,6 +51,7 @@
 
                 <Button
                     android:id="@+id/decrease_quantity"
+                    android:layout_weight="2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="decreaseInteger"
@@ -58,11 +59,12 @@
 
                 <TextView
                     android:id="@+id/add_quantity"
+                    android:layout_weight="2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginRight="40dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:layout_marginTop="8dp"
                     android:text="0"
                     android:textStyle="bold"
@@ -70,18 +72,12 @@
 
                 <Button
                     android:id="@+id/increase_quantity"
+                    android:layout_weight="2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="increaseInteger"
                     android:text="+" />
             </LinearLayout>
-
-            <!-- Size field -->
-            <EditText
-                android:id="@+id/add_size"
-                android:hint="@string/product_size_hint"
-                android:inputType="number"
-                style="@style/EditorFieldStyle" />
 
         </LinearLayout>
     </LinearLayout>

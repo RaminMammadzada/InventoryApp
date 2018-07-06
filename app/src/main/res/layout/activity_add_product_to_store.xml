@@ -49,13 +49,6 @@
                 android:inputType="number"
                 style="@style/EditorFieldStyle" />
 
-            <!-- Size field -->
-            <EditText
-                android:id="@+id/add_size"
-                android:hint="@string/product_size_hint"
-                android:inputType="number"
-                style="@style/EditorFieldStyle" />
-
         </LinearLayout>
     </LinearLayout>
 
