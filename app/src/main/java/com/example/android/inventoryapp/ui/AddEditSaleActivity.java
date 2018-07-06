@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.app.LoaderManager;
 
@@ -49,12 +50,13 @@ public class AddEditSaleActivity extends AppCompatActivity implements
     private EditText mPriceEditText;
 
     /**
-     * EditText field to enter the sale's quantity
+     * TextView field to enter the sale's quantity
      */
-    private EditText mQuantityEditText;
+    private TextView mQuantityTextView;
+    int mQuantity = 0; // this field to store the quantity
 
     /**
-     * EditText field to enter the pet's gender
+     * EditText field to enter the supplier name of the sold product
      */
     private Spinner mSupplierNameSpinner;
 
@@ -68,8 +70,17 @@ public class AddEditSaleActivity extends AppCompatActivity implements
      */
     public int mSupplierName = SaleEntry.UNKNOWN;
 
+    /**
+     * EditText field to enter the supplier phone of the sold product
+     */
+    private EditText mSupplierPhoneEditText;
+
+
     /** Boolean flag that keeps track of whether the sale has been edited (true) or not (false) */
     private boolean mSaleHasChanged = false;
+
+    /** It stores the name of the last Activity run before this activity */
+    String lastActivity = "";
 
     /**
      * OnTouchListener that listens for any user touches on a View, implying that they are modifying
@@ -93,6 +104,14 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         mCurrentSaleUri = intent.getData();
 
+        String caller = getIntent().getStringExtra("caller");
+        try {
+            lastActivity = "ProductsActivity";
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+
         // If the intent DOES NOT contain a pet content URI, then we know that we are
         // creating a new pet.
         if (mCurrentSaleUri == null) {
@@ -102,11 +121,18 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete a pet that hasn't been created yet.)
             invalidateOptionsMenu();
-        } else {
+        } else if (mCurrentSaleUri != null && lastActivity=="ProductsActivity") {
+            setTitle(getString(R.string.editor_activity_title_new_sale));
+
+            // Initialize a loader to read the product data from the database
+            // and display the current values in the editor
+            getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
+        }
+        else {
             // Otherwise this is an existing pet, so change app bar to say "Edit Sale"
             setTitle(getString(R.string.editor_activity_title_edit_sale));
 
-            // Initialize a loader to read the pet data from the database
+            // Initialize a loader to read the product data from the database
             // and display the current values in the editor
             getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
         }
@@ -114,22 +140,48 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById( R.id.add_name );
         mPriceEditText = (EditText) findViewById( R.id.add_price);
-        mQuantityEditText = (EditText) findViewById( R.id.add_quantity );
+        mQuantityTextView = (TextView) findViewById( R.id.add_quantity );
         mSupplierNameSpinner = (Spinner) findViewById( R.id.spinner_supplier );
+        mSupplierPhoneEditText = (EditText) findViewById( R.id.add_supplier_phone );
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
         // or not, if the user tries to leave the editor without saving.
         mNameEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
-        mQuantityEditText.setOnTouchListener(mTouchListener);
+        // mQuantityTextView is defined by increaseQuantity and decreaseQuantity functions
         mSupplierNameSpinner.setOnTouchListener(mTouchListener);
-
         setupSpinner();
+
+        mSupplierPhoneEditText.setOnTouchListener( mTouchListener );
+
+    }
+
+    public void increaseInteger(View view) {
+        mQuantity = mQuantity + 1;
+        if(mQuantity<=1000){
+            displayQuantity(mQuantity);
+        } else {
+            mQuantity = mQuantity - 1;
+        }
+
+    }public void decreaseInteger(View view) {
+        mQuantity = mQuantity - 1;
+        if(mQuantity>=0){
+            displayQuantity(mQuantity);
+        } else {
+            mQuantity = mQuantity + 1;
+        }
+    }
+
+    private void displayQuantity(int quantity) {
+        TextView displayQuantityInteger = (TextView) findViewById(
+                R.id.add_quantity);
+        displayQuantityInteger.setText("" + quantity);
     }
 
     /**
-     * Setup the dropdown spinner that allows the user to select the gender of the pet.
+     * Setup the dropdown spinner that allows the user to select the supplier of the sold product.
      */
     private void setupSpinner() {
         // Create adapter for spinner. The list options are from the String array it will use
@@ -185,14 +237,15 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
-        String quantityString = mQuantityEditText.getText().toString().trim();
+        String quantityString = mQuantityTextView.getText().toString().trim();
+        String supplierPhone = mSupplierPhoneEditText.getText().toString().trim();
 
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank
         if (mCurrentSaleUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
                 TextUtils.isEmpty(quantityString) && mSupplierName == SaleEntry.UNKNOWN) {
-            // Since no fields were modified, we can return early without creating a new pet.
+            // Since no fields were modified, we can return early without creating a new sale.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return false;
         }
@@ -202,7 +255,8 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         // checking if there any blank editText or not
         if(TextUtils.isEmpty(mNameEditText.getText()) ){ mNameEditText.setError( "Name is required!" ); isThereMissingField = true;}
         else if (TextUtils.isEmpty(mPriceEditText.getText())) { mPriceEditText.setError( "Price is required!" ); isThereMissingField = true;}
-        else if (TextUtils.isEmpty(mQuantityEditText.getText())) { mQuantityEditText.setError( "Quantity is required!" ); isThereMissingField = true;}
+        else if (TextUtils.isEmpty(mQuantityTextView.getText())) { mQuantityTextView.setError( "Quantity is required!" ); isThereMissingField = true;}
+        else if (TextUtils.isEmpty(mSupplierPhoneEditText.getText())) { mSupplierPhoneEditText.setError( "Supplier phone is required!" ); isThereMissingField = true;}
 
         if(isThereMissingField) return false;
 
@@ -213,6 +267,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         values.put( SaleEntry.COLUMN_SALE_PRICE, priceString );
         values.put( SaleEntry.COLUMN_SALE_QUANTITY, quantityString );
         values.put( SaleEntry.COLUMN_SALE_SUPPLIER_NAME, mSupplierName );
+        values.put( SaleEntry.COLUMN_SALE_SUPPLIER_PHONE, supplierPhone );
 
         // Determine if this is a new or existing pet by checking if mCurrentSaleUri is null or not
         if (mCurrentSaleUri == null) {
@@ -231,11 +286,32 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             }
         } else {
-            // Otherwise this is an EXISTING pet, so update the sale with content URI: mCurrentSaleUri
+            // Otherwise this is an EXISTING product, so update the sale with content URI: mCurrentSaleUri
             // and pass in the new ContentValues. Pass in null for the selection and selection args
             // because mCurrentSaleUri will already identify the correct row in the database that
             // we want to modify.
-            int rowsAffected = getContentResolver().update(mCurrentSaleUri, values, null, null);
+            int rowsAffected = 0;
+            if(lastActivity == "ProductsActivity"){
+
+                rowsAffected = getContentResolver().update( mCurrentSaleUri, values,null, null );
+
+                Uri newUri = getContentResolver().insert(SaleEntry.CONTENT_URI, values);
+                getBaseContext().getContentResolver().notifyChange(newUri, null);
+
+                // Show a toast message depending on whether or not the insertion was successful.
+                if (newUri == null) {
+                    // If the new content URI is null, then there was an error with insertion.
+                    Toast.makeText(this, getString(R.string.editor_insert_sale_failed),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    // Otherwise, the insertion was successful and we can display a toast.
+                    Toast.makeText(this, getString(R.string.editor_insert_sale_successful),
+                            Toast.LENGTH_SHORT).show();
+                }
+
+            } else {
+                rowsAffected = getContentResolver().update( mCurrentSaleUri, values, null, null );
+            }
 
             // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
@@ -356,7 +432,8 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                 SaleEntry.COLUMN_SALE_PRODUCT_NAME,
                 SaleEntry.COLUMN_SALE_PRICE,
                 SaleEntry.COLUMN_SALE_QUANTITY,
-                SaleEntry.COLUMN_SALE_SUPPLIER_NAME};
+                SaleEntry.COLUMN_SALE_SUPPLIER_NAME,
+                SaleEntry.COLUMN_SALE_SUPPLIER_PHONE};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -380,19 +457,19 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             // Find the columns of pet attributes that we're interested in
             int nameColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_SALE_PRODUCT_NAME);
             int priceColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_SALE_PRICE);
-            int quantityColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_SALE_QUANTITY);
             int supplierNameColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_SALE_SUPPLIER_NAME);
+            int supplierPhoneColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_SALE_SUPPLIER_PHONE);
+
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
-            int quantity = cursor.getInt(quantityColumnIndex);
             int supplierName = cursor.getInt(supplierNameColumnIndex);
+            String supplierPhone = cursor.getString(supplierPhoneColumnIndex);
 
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mPriceEditText.setText(Integer.toString( price ));
-            mQuantityEditText.setText(Integer.toString( quantity ));
 
             // Supplier is a dropdown spinner, so map the constant value from the database
             // into one of the dropdown options (0 is Unknown, 1 KAMUEL, 2 is WALKAIR, 3 is DEPEDRO and so on).
@@ -420,6 +497,21 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                     mSupplierNameSpinner.setSelection( 6 );
                     break;
             }
+
+
+            mSupplierPhoneEditText.setText(supplierPhone);
+
+            // We are checking that is the last activity before this ProductsActivity or SalesActivity
+            if (lastActivity != "ProductsActivity") {
+                // in this case, we came from SalesActivity so, every edittext field must be filled, including quantity !
+                int quantityColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_SALE_QUANTITY);
+                int quantity = cursor.getInt(quantityColumnIndex);
+                mQuantityTextView.setText(Integer.toString( quantity ));
+            }
+            // in this case, we came from ProductsActivity so, every edittext field must be filled also, except quantity !
+            // I didn't need ELSE here, because I don't need to take the quantity index of the product,
+            // in the edittext field, user will type a new quantity for himself, bacause it is a new sale (all field filled except quantity)
+
         }
     }
 
@@ -428,8 +520,9 @@ public class AddEditSaleActivity extends AppCompatActivity implements
         // If the loader is invalidated, clear out all the data from the input fields.
         mNameEditText.setText("");
         mPriceEditText.setText("");
-        mQuantityEditText.setText("");
+        mQuantityTextView.setText("");
         mSupplierNameSpinner.setSelection( 0 ); // Select 'UNKNOWN' supplier
+        mSupplierPhoneEditText.setText( "" );
 
     }
 

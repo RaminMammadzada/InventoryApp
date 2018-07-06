@@ -74,10 +74,10 @@ public class SalesActivity extends AppCompatActivity implements LoaderManager.Lo
                 // {@link ProductEntry#CONTENT_URI}.
                 // For example, the URI would be "content://com.example.android.inventoryapp/prodcuts/2"
                 // if the pet with ID 2 was clicked on.
-                Uri currentPetUri = ContentUris.withAppendedId(SaleEntry.CONTENT_URI, id);
+                Uri currentSaleUri = ContentUris.withAppendedId(SaleEntry.CONTENT_URI, id);
 
                 // Set the URI on the data field of the intent
-                intent.setData(currentPetUri);
+                intent.setData(currentSaleUri);
 
                 // Launch the {@link EditorActivity} to display the data for the current product.
                 startActivity(intent);
@@ -99,6 +99,7 @@ public class SalesActivity extends AppCompatActivity implements LoaderManager.Lo
         values.put(SaleEntry.COLUMN_SALE_PRICE, 88);
         values.put(SaleEntry.COLUMN_SALE_QUANTITY, 105);
         values.put(SaleEntry.COLUMN_SALE_SUPPLIER_NAME, SaleEntry.FOREX);
+        values.put(SaleEntry.COLUMN_SALE_SUPPLIER_PHONE, "02128584782");
 
         // Insert a new row for Toto into the provider using the ContentResolver.
         // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert

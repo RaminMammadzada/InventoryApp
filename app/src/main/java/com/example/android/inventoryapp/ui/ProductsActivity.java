@@ -15,13 +15,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.support.design.widget.FloatingActionButton;
+import android.widget.Toast;
 
 import com.example.android.inventoryapp.R;
 import com.example.android.inventoryapp.adapter.ProductCursorAdapter;
 
 import com.example.android.inventoryapp.data.ProductContract.ProductEntry;
+import com.example.android.inventoryapp.data.SaleContract.SaleEntry;
 
 
 /**
@@ -35,6 +38,10 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
     /** Adapter for the ListView */
     ProductCursorAdapter mCursorAdapter;
 
+    Button saleButton;
+
+    long mIdForProduct;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +54,7 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
             public void onClick(View view) {
                 Intent intent = new Intent(ProductsActivity.this, AddEditProductActivity.class);
                 startActivity(intent);
+
             }
         });
 
@@ -62,27 +70,55 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
         mCursorAdapter = new ProductCursorAdapter(this, null);
         productListView.setAdapter(mCursorAdapter);
 
+        //saleButton = findViewById( R.id.sale_button );
+
         // Setup the item click listener
-        productListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mCursorAdapter.setListener( new ProductCursorAdapter.OnProductInteractionListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Create new intent to go to {@link EditorActivity}
+            public void onItemClick(long id) {
+                Toast.makeText( ProductsActivity.this, "Itema tikladin", Toast.LENGTH_SHORT ).show();
+
                 Intent intent = new Intent(ProductsActivity.this, AddEditProductActivity.class);
 
-                // Form the content URI that represents the specific prpduct that was clicked on,
+                // Form the content URI that represents the specific product that was clicked on,
                 // by appending the "id" (passed as input to this method) onto the
                 // {@link ProductEntry#CONTENT_URI}.
                 // For example, the URI would be "content://com.example.android.inventoryapp/prodcuts/2"
-                // if the pet with ID 2 was clicked on.
-                Uri currentPetUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
+                // if the product with ID 2 was clicked on.
+                Uri currentProductUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
 
                 // Set the URI on the data field of the intent
-                intent.setData(currentPetUri);
+                intent.setData(currentProductUri);
 
                 // Launch the {@link EditorActivity} to display the data for the current product.
                 startActivity(intent);
             }
-        });
+
+            @Override
+            public void onSaleButtonClick(long id) {
+                Toast.makeText( ProductsActivity.this, "Sale buttona tikladin", Toast.LENGTH_SHORT ).show();
+
+                Intent intent = new Intent(ProductsActivity.this, AddEditSaleActivity.class);
+
+                // Form the content URI that represents the specific product that was clicked on,
+                // by appending the "id" (passed as input to this method) onto the
+                // {@link ProductEntry#CONTENT_URI}.
+                // For example, the URI would be "content://com.example.android.inventoryapp/prodcuts/2"
+                // if the product with ID 2 was clicked on.
+                Uri currentProductUri = ContentUris.withAppendedId( ProductEntry.CONTENT_URI, id);
+
+
+
+                // Set the URI on the data field of the intent
+                intent.setData(currentProductUri);
+
+                intent.putExtra("caller", "ProductsActivity");
+
+                // Launch the {@link EditorActivity} to display the data for the current product.
+                startActivity(intent);
+
+            }
+        } );
 
         // Kick off the loader
         getLoaderManager().initLoader(PRODUCT_LOADER, null, this);

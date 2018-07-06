@@ -119,7 +119,10 @@ public class AddEditProductActivity extends AppCompatActivity implements
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById( R.id.add_name );
         mPriceEditText = (EditText) findViewById( R.id.add_price);
+
         mQuantityEditText = (EditText) findViewById( R.id.add_quantity );
+
+
         mSupplierNameSpinner = (Spinner) findViewById( R.id.spinner_supplier );
         mSupplierPhone = (EditText) findViewById( R.id.add_supplier_phone );
 

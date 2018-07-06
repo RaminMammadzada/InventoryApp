@@ -54,7 +54,8 @@ public class SalesAndProductsDbHelper extends SQLiteOpenHelper {
                 + SaleEntry.COLUMN_SALE_PRODUCT_NAME + " TEXT NOT NULL, "
                 + SaleEntry.COLUMN_SALE_PRICE + " INTEGER NOT NULL, "
                 + SaleEntry.COLUMN_SALE_QUANTITY+ " INTEGER NOT NULL, "
-                + SaleEntry.COLUMN_SALE_SUPPLIER_NAME + " TEXT NOT NULL);";
+                + SaleEntry.COLUMN_SALE_SUPPLIER_NAME + " TEXT NOT NULL, "
+                + SaleEntry.COLUMN_SALE_SUPPLIER_PHONE + " TEXT NOT NULL);";
 
         // Execute the SQL statement
         db.execSQL(SQL_CREATE_SALES_TABLE);
@@ -67,6 +68,11 @@ public class SalesAndProductsDbHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + ProductEntry.TABLE_NAME );
+
+        db.execSQL("DROP TABLE IF EXISTS " + SaleEntry.TABLE_NAME );
+
+        onCreate(db);
     }
 
 }

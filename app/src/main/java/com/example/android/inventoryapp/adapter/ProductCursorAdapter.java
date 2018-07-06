@@ -2,6 +2,7 @@ package com.example.android.inventoryapp.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.BaseColumns;
 import android.renderscript.Sampler;
 import android.support.v4.widget.CursorAdapter;
 import android.text.TextUtils;
@@ -19,7 +20,18 @@ import com.example.android.inventoryapp.data.ProductContract.ProductEntry;
  * that uses a {@link Cursor} of product data as its data source. This adapter knows
  * how to create list items for each row of product data in the {@link Cursor}.
  */
-public class ProductCursorAdapter extends CursorAdapter{
+public class ProductCursorAdapter extends CursorAdapter {
+
+    OnProductInteractionListener listener;
+
+    public OnProductInteractionListener getListener() {
+        return listener;
+    }
+
+    public void setListener(OnProductInteractionListener listener) {
+        this.listener = listener;
+    }
+
     /**
      * Constructs a new {@link SaleCursorAdapter}.
      *
@@ -27,7 +39,7 @@ public class ProductCursorAdapter extends CursorAdapter{
      * @param c       The cursor from which to get the data.
      */
     public ProductCursorAdapter(Context context, Cursor c) {
-        super(context, c, 0 /* flags */);
+        super( context, c, 0 /* flags */ );
     }
 
     /**
@@ -42,7 +54,7 @@ public class ProductCursorAdapter extends CursorAdapter{
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         // Inflate a list item view using the layout specified in list_item.xml
-        return LayoutInflater.from(context).inflate( R.layout.list_item, parent, false);
+        return LayoutInflater.from( context ).inflate( R.layout.list_item, parent, false );
     }
 
     /**
@@ -58,27 +70,49 @@ public class ProductCursorAdapter extends CursorAdapter{
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Find individual views that we want to modify in the list item layout
-        TextView nameTextView = (TextView) view.findViewById(R.id.name);
-        TextView priceTextView = (TextView) view.findViewById(R.id.price);
+        TextView nameTextView = (TextView) view.findViewById( R.id.name );
+        TextView priceTextView = (TextView) view.findViewById( R.id.price );
         TextView quantityTextView = (TextView) view.findViewById( R.id.quantity );
 
         // Find the columns of product attributes that we're interested in
-        int nameColumnIndex = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_NAME);
-        int priceColumnIndex = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_PRICE);
-        int quantityColumnIndex = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_QUANTITY);
+        int idIndex = cursor.getColumnIndex( ProductEntry._ID );
+        int nameColumnIndex = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_NAME );
+        int priceColumnIndex = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_PRICE );
+        int quantityColumnIndex = cursor.getColumnIndex( ProductEntry.COLUMN_PRODUCT_QUANTITY );
 
         // Read the product attributes from the Cursor for the current product
-        String productProductName = cursor.getString(nameColumnIndex);
-        int productProductPrice = cursor.getInt(priceColumnIndex);
-        int productProductQuantity = cursor.getInt(quantityColumnIndex);
+        final long id = cursor.getLong( idIndex );
+        String productProductName = cursor.getString( nameColumnIndex );
+        int productProductPrice = cursor.getInt( priceColumnIndex );
+        int productProductQuantity = cursor.getInt( quantityColumnIndex );
+
 
         // Update the TextViews with the attributes for the current product
-        nameTextView.setText(productProductName);
-        priceTextView.setText(String.valueOf( productProductPrice ));
-        quantityTextView.setText(String.valueOf( productProductQuantity ));
+        nameTextView.setText( productProductName );
+        priceTextView.setText( String.valueOf( productProductPrice ) );
+        quantityTextView.setText( String.valueOf( productProductQuantity ) );
 
-        // Setting SALE button and making it visible
-        Button saleButton = (Button) view.findViewById( R.id.sale_button );
-        saleButton.setVisibility( View.VISIBLE );
+        view.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getListener().onItemClick( id );
+            }
+        } );
+
+        Button saleButton = view.findViewById( R.id.sale_button );
+        saleButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getListener().onSaleButtonClick( id );
+            }
+        } );
+
+    }
+
+    public interface OnProductInteractionListener {
+        void onItemClick(long id);
+
+        void onSaleButtonClick(long id);
+
     }
 }
