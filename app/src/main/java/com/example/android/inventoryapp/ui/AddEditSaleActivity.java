@@ -26,6 +26,8 @@ import android.widget.Toast;
 import android.app.LoaderManager;
 
 import com.example.android.inventoryapp.R;
+import com.example.android.inventoryapp.data.ProductContract;
+import com.example.android.inventoryapp.data.ProductProvider;
 import com.example.android.inventoryapp.data.SaleContract.SaleEntry;
 
 /**
@@ -295,9 +297,6 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             // we want to modify.
             int rowsAffected = 0;
             if(lastActivity == "ProductsActivity"){
-
-                rowsAffected = getContentResolver().update( mCurrentSaleUri, values,null, null );
-
                 Uri newUri = getContentResolver().insert(SaleEntry.CONTENT_URI, values);
                 getBaseContext().getContentResolver().notifyChange(newUri, null);
 
@@ -311,6 +310,31 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                     Toast.makeText(this, getString(R.string.editor_insert_sale_successful),
                             Toast.LENGTH_SHORT).show();
                 }
+
+                // calculating the new quantity of the product in products table after sale
+                int newQuantity = 0;
+                int currentlySoldQuantity = Integer.valueOf( mQuantityTextView.getText().toString().trim() ); //currently sold quantity of the product
+
+
+                //specify the columns to be fetched
+                String[] projection = {ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY,};
+                //Select condition
+                String selection = ProductContract.ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
+                //Arguments for selection
+                String saleProductName = values.getAsString( ProductContract.ProductEntry.COLUMN_PRODUCT_NAME);
+                String[] selectionArgs = {saleProductName};
+                Cursor cursorPoductInTable = getContentResolver().query( mCurrentSaleUri, projection, selection, selectionArgs, null );
+                // for current quantity in product table
+                cursorPoductInTable.moveToFirst();
+                int indexForQuantityInProductTable = cursorPoductInTable.getColumnIndex( ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY );
+                int quantityInProductTable = cursorPoductInTable.getInt( indexForQuantityInProductTable );
+
+                newQuantity = quantityInProductTable - currentlySoldQuantity;
+
+                values.put( SaleEntry.COLUMN_SALE_QUANTITY, newQuantity );
+
+                rowsAffected = getContentResolver().update( mCurrentSaleUri, values,null, null );
+
 
             } else {
                 rowsAffected = getContentResolver().update( mCurrentSaleUri, values, null, null );
