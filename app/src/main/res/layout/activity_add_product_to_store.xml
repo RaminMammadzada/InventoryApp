@@ -87,7 +87,17 @@
                 style="@style/EditorFieldStyle" />
 
         </LinearLayout>
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/order_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/order_button_text"
+        android:onClick="orderMore"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"/>
 
 
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.example.android.inventoryapp.ui;
 
 import android.app.AlertDialog;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -35,7 +36,7 @@ public class AddEditProductActivity extends AppCompatActivity implements
     /** Identifier for the pet data loader */
     private static final int EXISTING_PRODUCT_LOADER = 0;
 
-    /** Content URI for the existing pet (null if it's a new pet) */
+    /** Content URI for the existing pet (null if it's a new product) */
     private Uri mCurrentProductUri;
 
     /**
@@ -185,6 +186,29 @@ public class AddEditProductActivity extends AppCompatActivity implements
                 mSupplierName = ProductEntry.UNKNOWN;
             }
         } );
+    }
+
+    public void orderMore(View view) {
+        Toast.makeText( AddEditProductActivity.this, "You pressed ORDER button.", Toast.LENGTH_SHORT ).show();
+
+        // Form the content URI that represents the specific product that was clicked on,
+        // by appending the "id" (passed as input to this method) onto the
+        // {@link ProductEntry#CONTENT_URI}.
+        // For example, the URI would be "content://com.example.android.inventoryapp/prodcuts/2"
+        // if the product with ID 2 was clicked on.
+        Uri currentProductUri = mCurrentProductUri;
+
+        //specify the columns to be fetched
+        String[] projection = {ProductEntry.COLUMN_SUPPLIER_PHONE,};
+        Cursor cursorPoductInTable = getContentResolver().query( currentProductUri, projection, null, null, null );
+        // for current quantity in product table
+        cursorPoductInTable.moveToFirst();
+        int indexForSupplierPhoneInProductTable = cursorPoductInTable.getColumnIndex( ProductEntry.COLUMN_SUPPLIER_PHONE );
+        String supplierPhoneInProductTable = cursorPoductInTable.getString( indexForSupplierPhoneInProductTable );
+
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse("tel:" + supplierPhoneInProductTable));
+        startActivity(intent);
     }
 
     /**
@@ -537,4 +561,6 @@ public class AddEditProductActivity extends AppCompatActivity implements
         // Close the activity
         finish();
     }
+
+
 }
