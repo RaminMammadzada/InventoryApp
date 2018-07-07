@@ -22,10 +22,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.inventoryapp.R;
 import com.example.android.inventoryapp.data.ProductContract.ProductEntry;
+
+import org.w3c.dom.Text;
 
 /**
  * Allows user to create a new product or edit an existing one.
@@ -52,7 +55,8 @@ public class AddEditProductActivity extends AppCompatActivity implements
     /**
      * EditText field to enter the product's quantity
      */
-    private EditText mQuantityEditText;
+    private TextView mQuantityTextView;
+    int mQuantity;
 
     /**
      * EditText field to enter the pet's gender
@@ -120,10 +124,7 @@ public class AddEditProductActivity extends AppCompatActivity implements
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById( R.id.add_name );
         mPriceEditText = (EditText) findViewById( R.id.add_price);
-
-        mQuantityEditText = (EditText) findViewById( R.id.add_quantity );
-
-
+        mQuantityTextView = (TextView) findViewById( R.id.add_quantity );
         mSupplierNameSpinner = (Spinner) findViewById( R.id.spinner_supplier );
         mSupplierPhone = (EditText) findViewById( R.id.add_supplier_phone );
 
@@ -132,7 +133,7 @@ public class AddEditProductActivity extends AppCompatActivity implements
         // or not, if the user tries to leave the editor without saving.
         mNameEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
-        mQuantityEditText.setOnTouchListener(mTouchListener);
+        mQuantityTextView.setOnTouchListener(mTouchListener);
         mSupplierNameSpinner.setOnTouchListener(mTouchListener);
         mSupplierPhone.setOnTouchListener(mTouchListener);
 
@@ -188,6 +189,33 @@ public class AddEditProductActivity extends AppCompatActivity implements
         } );
     }
 
+
+    public void increaseInteger(View view) {
+        mQuantity = mQuantity + 1;
+        if (mQuantity <= 1000) {
+            displayQuantity( mQuantity );
+        } else {
+            mQuantity = mQuantity - 1;
+        }
+
+    }
+
+    public void decreaseInteger(View view) {
+        mQuantity = mQuantity - 1;
+        if (mQuantity >= 0) {
+            displayQuantity( mQuantity );
+        } else {
+            mQuantity = mQuantity + 1;
+        }
+    }
+
+    private void displayQuantity(int quantity) {
+        TextView displayQuantityInteger = (TextView) findViewById(
+                R.id.add_quantity );
+        displayQuantityInteger.setText( "" + quantity );
+    }
+
+
     public void orderMore(View view) {
         Toast.makeText( AddEditProductActivity.this, "You pressed ORDER button.", Toast.LENGTH_SHORT ).show();
 
@@ -219,7 +247,7 @@ public class AddEditProductActivity extends AppCompatActivity implements
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
-        String quantityString = mQuantityEditText.getText().toString().trim();
+        String quantityString = mQuantityTextView.getText().toString().trim();
         String supplierPhoneString = mSupplierPhone.getText().toString().trim();
 
         // Check if this is supposed to be a new pet
@@ -238,7 +266,7 @@ public class AddEditProductActivity extends AppCompatActivity implements
         // checking if there any blank editText or not
         if(TextUtils.isEmpty(mNameEditText.getText()) ){ mNameEditText.setError( "Name is required!" ); isThereMissingField = true;}
         else if (TextUtils.isEmpty(mPriceEditText.getText())) { mPriceEditText.setError( "Price is required!" ); isThereMissingField = true;}
-        else if (TextUtils.isEmpty(mQuantityEditText.getText())) { mQuantityEditText.setError( "Quantity is required!" ); isThereMissingField = true;}
+        else if (TextUtils.isEmpty(mQuantityTextView.getText())) { mQuantityTextView.setError( "Quantity is required!" ); isThereMissingField = true;}
         else if (TextUtils.isEmpty(mSupplierPhone.getText())) {mSupplierPhone.setError( "Phone is required" ); isThereMissingField = true;}
 
         if(isThereMissingField) return false;
@@ -434,7 +462,7 @@ public class AddEditProductActivity extends AppCompatActivity implements
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mPriceEditText.setText(Integer.toString( price ));
-            mQuantityEditText.setText(Integer.toString( quantity ));
+            mQuantityTextView.setText(Integer.toString( quantity ));
             mSupplierPhone.setText(supplierPhone);
 
             // Supplier is a dropdown spinner, so map the constant value from the database
@@ -471,7 +499,7 @@ public class AddEditProductActivity extends AppCompatActivity implements
         // If the loader is invalidated, clear out all the data from the input fields.
         mNameEditText.setText("");
         mPriceEditText.setText("");
-        mQuantityEditText.setText("");
+        mQuantityTextView.setText("");
         mSupplierNameSpinner.setSelection( 0 ); // Select 'UNKNOWN' supplier
         mSupplierPhone.setText("");
 

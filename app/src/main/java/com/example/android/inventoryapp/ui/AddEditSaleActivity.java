@@ -314,58 +314,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             // because mCurrentSaleUri will already identify the correct row in the database that
             // we want to modify.
             int rowsAffected = 0;
-            if (lastActivity == "ProductsActivity") {
-                Uri newUri = getContentResolver().insert( SaleEntry.CONTENT_URI, values );
-                getBaseContext().getContentResolver().notifyChange( newUri, null );
-
-                // Show a toast message depending on whether or not the insertion was successful.
-                if (newUri == null) {
-                    // If the new content URI is null, then there was an error with insertion.
-                    Toast.makeText( this, getString( R.string.editor_insert_sale_failed ),
-                            Toast.LENGTH_SHORT ).show();
-                } else {
-                    // Otherwise, the insertion was successful and we can display a toast.
-                    Toast.makeText( this, getString( R.string.editor_insert_sale_successful ),
-                            Toast.LENGTH_SHORT ).show();
-                }
-
-                // calculating the new quantity of the product in products table after sale
-                int newQuantity = 0;
-                int currentlySoldQuantity = Integer.valueOf( mQuantityTextView.getText().toString().trim() ); //currently sold quantity of the product
-
-
-                //specify the columns to be fetched
-                String[] projection = {ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY,};
-                //Select condition
-                String selection = ProductContract.ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
-                //Arguments for selection
-                String saleProductName = values.getAsString( ProductContract.ProductEntry.COLUMN_PRODUCT_NAME );
-                String[] selectionArgs = {saleProductName};
-                Cursor cursorPoductInTable = getContentResolver().query( mCurrentSaleUri, projection, selection, selectionArgs, null );
-                // for current quantity in product table
-                cursorPoductInTable.moveToFirst();
-                int indexForQuantityInProductTable = cursorPoductInTable.getColumnIndex( ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY );
-                int quantityInProductTable = cursorPoductInTable.getInt( indexForQuantityInProductTable );
-
-                if (currentlySoldQuantity > 0) {
-                    if (currentlySoldQuantity > quantityInProductTable) {
-                        mQuantityTextView.setError( "You cannot sell more than!" + quantityString );
-                        return false;
-                    }
-                } else {return false;}
-
-                newQuantity = quantityInProductTable - currentlySoldQuantity;
-
-                values.put( SaleEntry.COLUMN_SALE_QUANTITY, newQuantity );
-
-                rowsAffected = getContentResolver().update( mCurrentSaleUri, values, null, null );
-
-
-            } else {
-                rowsAffected = getContentResolver().update( mCurrentSaleUri, values, null, null );
-                /*Uri currentProductUri = ContentUris.withAppendedId( SaleEntry.CONTENT_URI, id);
-                getContentResolver().update( currentProductUri, null, null );*/
-            }
+            rowsAffected = getContentResolver().update( mCurrentSaleUri, values, null, null );
 
             // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
@@ -511,6 +460,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             // Find the columns of pet attributes that we're interested in
             int nameColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_PRODUCT_NAME );
             int priceColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_PRICE );
+            int quantityColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_QUANTITY );
             int supplierNameColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_SUPPLIER_NAME );
             int supplierPhoneColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_SUPPLIER_PHONE );
 
@@ -518,6 +468,7 @@ public class AddEditSaleActivity extends AppCompatActivity implements
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString( nameColumnIndex );
             int price = cursor.getInt( priceColumnIndex );
+            int quantity = cursor.getInt( quantityColumnIndex );
             int supplierName = cursor.getInt( supplierNameColumnIndex );
             String supplierPhone = cursor.getString( supplierPhoneColumnIndex );
 
@@ -552,20 +503,8 @@ public class AddEditSaleActivity extends AppCompatActivity implements
                     break;
             }
 
-
             mSupplierPhoneEditText.setText( supplierPhone );
-
-            // We are checking that is the last activity before this ProductsActivity or SalesActivity
-            if (lastActivity != "ProductsActivity") {
-                // in this case, we came from SalesActivity so, every edittext field must be filled, including quantity !
-                int quantityColumnIndex = cursor.getColumnIndex( SaleEntry.COLUMN_SALE_QUANTITY );
-                int quantity = cursor.getInt( quantityColumnIndex );
-                mQuantityTextView.setText( Integer.toString( quantity ) );
-            }
-            // in this case, we came from ProductsActivity so, every edittext field must be filled also, except quantity !
-            // I didn't need ELSE here, because I don't need to take the quantity index of the product,
-            // in the edittext field, user will type a new quantity for himself, bacause it is a new sale (all field filled except quantity)
-
+            mQuantityTextView.setText( Integer.toString( quantity ) );
         }
     }
 

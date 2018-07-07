@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.android.inventoryapp.R;
 import com.example.android.inventoryapp.adapter.ProductCursorAdapter;
 
+import com.example.android.inventoryapp.data.ProductContract;
 import com.example.android.inventoryapp.data.ProductContract.ProductEntry;
 import com.example.android.inventoryapp.data.SaleContract.SaleEntry;
 
@@ -98,7 +99,7 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
             public void onSaleButtonClick(long id) {
                 Toast.makeText( ProductsActivity.this, "You pressed SALE button.", Toast.LENGTH_SHORT ).show();
 
-                Intent intent = new Intent(ProductsActivity.this, AddEditSaleActivity.class);
+                ContentValues values = new ContentValues();
 
                 // Form the content URI that represents the specific product that was clicked on,
                 // by appending the "id" (passed as input to this method) onto the
@@ -107,15 +108,27 @@ public class ProductsActivity extends AppCompatActivity implements LoaderManager
                 // if the product with ID 2 was clicked on.
                 Uri currentProductUri = ContentUris.withAppendedId( ProductEntry.CONTENT_URI, id);
 
+                //specify the columns to be fetched
+                String[] projection = {ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY,};
+                //Select condition
+                String selection = ProductContract.ProductEntry.COLUMN_PRODUCT_NAME + " = ?";
+                //Arguments for selection
+                String saleProductName = values.getAsString( ProductContract.ProductEntry.COLUMN_PRODUCT_NAME );
+                String[] selectionArgs = {saleProductName};
+                Cursor cursorPoductInTable = getContentResolver().query( currentProductUri, projection, selection, selectionArgs, null );
+                // for current quantity in product table
+                cursorPoductInTable.moveToFirst();
+                int indexForQuantityInProductTable = cursorPoductInTable.getColumnIndex( ProductContract.ProductEntry.COLUMN_PRODUCT_QUANTITY );
+                int quantityInProductTable = cursorPoductInTable.getInt( indexForQuantityInProductTable );
 
+                int newQuantity = 0;
+                if(quantityInProductTable >0){
+                    newQuantity = quantityInProductTable - 1;
+                }
 
-                // Set the URI on the data field of the intent
-                intent.setData(currentProductUri);
+                values.put( ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity );
 
-                intent.putExtra("caller", "ProductsActivity");
-
-                // Launch the {@link EditorActivity} to display the data for the current product.
-                startActivity(intent);
+                getContentResolver().update( currentProductUri, values, null, null );
 
             }
         } );

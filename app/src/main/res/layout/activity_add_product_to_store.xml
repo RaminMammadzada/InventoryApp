@@ -43,11 +43,39 @@
                 style="@style/EditorFieldStyle" />
 
             <!-- Quantity field -->
-            <EditText
-                android:id="@+id/add_quantity"
-                android:hint="@string/product_quantity_hint"
-                android:inputType="number"
-                style="@style/EditorFieldStyle" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/decrease_quantity"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="decreaseInteger"
+                    android:text="-" />
+
+                <TextView
+                    android:id="@+id/add_quantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="8dp"
+                    android:text="0"
+                    android:textStyle="bold"
+                    android:textSize="30sp" />
+
+                <Button
+                    android:id="@+id/increase_quantity"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="increaseInteger"
+                    android:text="+" />
+            </LinearLayout>
 
         </LinearLayout>
     </LinearLayout>
